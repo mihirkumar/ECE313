@@ -137,16 +137,19 @@ end
 % T2.2.b
 
 fprintf(fid, '\n\nTask 2.2.b\n\n');
-  t_hours = array2table(t_hours);
-  data = [data t_hours];
+  t_hours_tab = hour(t);
+  t_hours_tab = array2table(t_hours_tab);
+  data = [data t_hours_tab];
+  avg_table = {1:24};
 for i=1:24,
     % Please note that i loop from 1 to 24
     % The hours in the data are from 0 to 23
     % !! Split the data in terms of hours (t_hours(:) == 0)
-    data_i = data(ismember(data.t_hours, (i-1)), :);
+    data_i = data(ismember(data.t_hours_tab, (i-1)), :);
     % !! Calculate the average duration for each hour(i)
     avg_i = mean(data_i.alarm_duration);
     fprintf(fid, 'Average duration for hh=%d = %f\n', i-1, avg_i);
+    avg_table{i} = avg_i;
 end
 figure;
 % !! Draw a bar chart to plot the average duration per hour
