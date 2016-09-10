@@ -1,7 +1,7 @@
 %   FILL IN / MODIFY THE CODE WITH "" or comments with !!
 
 % import monitor_alarms.mat and put it in a 
-load('\\ad.uillinois.edu\engr\Instructional\calbers2\documents\MATLAB\monitor_alarms.mat');
+load('\\ad.uillinois.edu\engr\Instructional\alitz2\documents\MATLAB\monitor_alarms.mat');
 data = MonitorAlarms;
 % not that the data is in a table format,
 % try the following in the command window:
@@ -73,25 +73,25 @@ fprintf(fid, '\n\nTask 1.3\n\n');
 % Print the result
 fprintf(fid, '\t\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\t14\t15\t16\t17\t18\t19\t20\t21\t22\t23\n');
 fprintf(fid, 'count\t');
-hourSYSTEM = {1:24};
-hourWARNING = {1:24};
-hourADVISORY = {1:24};
-hourCRISIS = {1:24};
+alarmHour = {1:24};
 formatIn = 'HH:MM:SS.FFF';
-zero_str = '00:00:00.000';
-time_str = '00:17:51.000';
-one_constant = datenum(zero_str, formatIn) - datenum(zero_str, formatIn);
-fprintf('%s ', (daten
-for i=1:24,
+%zero_str = '00:00:00.000';
+%time_str = '00:17:51.000';
+%one_constant = datenum(zero_str, formatIn) - datenum(zero_str, formatIn);
+t = cell2mat(data.StartTime);
+t_hours = hour(t);
+%for i=1:24,
     % !! Count the number of alarms for the given hour(i)
-um(time_str, formatIn) - datenum(zero_str, formatIn)));
+    %alarmHour{i} = t(ismember(i-1, t));
+    %tempHour =  t(ismember(t, (i-1)), :);
+    %data_SYSTEM = data(ismember(data.Alarm_Type, 'SYSTEM_ALARM'), :);
     %time_freq_SYSTEM = height(data_SYSTEM(ismember(data_SYSTEM.StartTime, date)
     %fprintf(fid, '%d\t', "COUNT_RESULT");
-end
+%end
 fprintf(fid, '\n');
 figure;
 % !! plot the histograms of alarms per hour
-
+hist_var = histogram(t_hours);
 % Labeling the figure
 title('Histogram of Alarms per hour');
 hours = {'00h', '01h', '02h','03h','04h','05h','06h','07h','08h','09h','10h','11h','12h','13h','14h','15h','16h','17h','18h','19h','20h','21h','22h','23h'};
@@ -99,38 +99,53 @@ set(gca, 'XTick', 0:23);
 set(gca,'XTickLabel',hours);
 ylabel('number of alarms');
 
+%fprintf('%d', hist_var(1));
 % T1.4.
 
 % !! convert the time into units of minutes
 % e.g. 01:35:01.432 is the 95th minute of a day
-
+t_minutes = minute(t);
+t_overall_minute = t_hours*60 + t_minutes;
 % !! count how many minutes contain at least one alarm
-
+minutes_w_alarm = length(unique(t_overall_minute));
 fprintf(fid, '\n\nTask 1.4\n\n');
-%fprintf(fid, 'P(Alarm In a minute) = %f\n', "PROBABILITY OF AN ALARM IN A RANDOMLY CHOSEN MINUTE");
+fprintf(fid, 'P(Alarm In a minute) = %f\n', minutes_w_alarm/1440);
 
 % T2.1 
 
 % !! Using the results from Task 1, derive the probability
-
-fprintf(fid, '\n\nTask 2.1\n\n');
-%fprintf(fid, 'P(LOW_OXY_SAT and SYSTEM) = %f\n', "PROBABILITY OF LOW_OXY_SAT and SYSTEM");
+ data_SYSTEM_curr = height(data_SYSTEM(ismember(data_SYSTEM.Cause,'APP_ERR'), :));
+ prob_app_given_sys = data_SYSTEM_curr/numSYSTEM;
+ fprintf(fid, '\n\nTask 2.1\n\n');
+ fprintf(fid, 'P(APP_ERR and SYSTEM) = %f\n', prob_app_given_sys* numSYSTEM/numTOTAL);
 
 % T2.2
 
 % !! Calculate the duration for each alarms
 % make sure that the durations are in seconds
+f = cell2mat(data.StopTime);
 
+t = datenum(t);
+f = datenum(f);
+alarm_duration = 24*3600 * (f - t);
+%add alarm duration to table
+alarm_duration = array2table(alarm_duration);
+data = [data alarm_duration];
 % T2.2.a 
 
 fprintf(fid, '\n\nTask 2.2.a\n\n');
 %for i=1:"NUMBER OF ALARM TYPES",
-    % !! Split the data interms of alarm type
-    
-    % !! Count the number of alarms for each alarm type
-    
+    % !! Split the data in terms of alarm type
+    data_SYSTEM = data(ismember(data.Alarm_Type, 'SYSTEM_ALARM'), :);
+    data_ADVISORY = data(ismember(data.Alarm_Type, 'ADVISORY_ALARM'), :);
+    data_WARNING = data(ismember(data.Alarm_Type, 'WARNING_ALARM'), :);
+    data_CRISIS = data(ismember(data.Alarm_Type, 'CRISIS_ALARM'), :);
+    % !! Count the number of alarms for each alarm types
     % !! Calculate the average duration of each alarm type
-    
+    system_ave = mean(data_SYSTEM.alarm_duration);
+    advisory_ave = mean(data_ADVISORY.alarm_duration);
+    warning_ave = mean(data_WARNING.alarm_duration);
+    crisis_ave = mean(data_CRISIS.alarm_duration);
     %fprintf(fid, 'Average duration for alarm type %s: %f\n', "ALARMTYPE", "AVERAGE_DURATION");
 %end
 
@@ -138,7 +153,7 @@ fprintf(fid, '\n\nTask 2.2.a\n\n');
 
 fprintf(fid, '\n\nTask 2.2.b\n\n');
 for i=1:24,
-    % Please not that i loop from 1 to 24
+    % Please note that i loop from 1 to 24
     % The hours in the data are from 0 to 23
 
     % !! Split the data in terms of hours
