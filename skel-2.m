@@ -187,9 +187,11 @@ fprintf(fid, 'Percent Change from Hour 4 to Hour 5:\t%f%%\n', 100*(hour_5_sum-ho
 
 %   Check most common alarm type
 
+%   Check most common alarm cause
 
+%   Check average duration
 
-%   Check average duration during hour 4
+%   Check alarms per bed
 
 
 % !! Write your own code for analysis (ref. codes for Task1 and Task2)
