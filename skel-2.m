@@ -1,7 +1,7 @@
 %   FILL IN / MODIFY THE CODE WITH "" or comments with !!
 
 % import monitor_alarms.mat and put it in a 
-load('monitor_alarms.mat');
+load('\\ad.uillinois.edu\engr\Instructional\alitz2\documents\MATLAB\monitor_alarms.mat');
 data = MonitorAlarms;
 % not that the data is in a table format,
 % try the following in the command window:
@@ -152,8 +152,9 @@ for i=1:24,
     avg_table{i} = avg_i;
 end
 figure;
+y = [avg_table{1:24}];
 % !! Draw a bar chart to plot the average duration per hour
-
+bar(y);
 % label the plot
 title('Average Duration for each hour of the day');
 ylabel('avg duration');
