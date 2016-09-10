@@ -165,6 +165,28 @@ fprintf(fid, '\n\nBONUS\n\n');
 fprintf(fid, '\n\nTask3\n\n');
 % !! Extract (split) the data that applies to your group
 
+%   Our group was assigned hours 4 and 5.
+%   We will be checking changes in:
+%       - Number of Alarms
+%       - Alarm Types
+%       - Alarm Causes
+%       - Average Durations
+%       - Alarms per Bed
+
+%   Check for number of alarms
+hour_4_sum = sum(t_hours(:) == 4);
+hour_5_sum = sum(t_hours(:) == 5);
+fprintf(fid, 'Number of Alerts in Hour 4:\t%d\n', hour_4_sum);
+fprintf(fid, 'Number of Alerts in Hour 5:\t%d\n', hour_5_sum);
+fprintf(fid, 'Percent Change from Hour 4 to Hour 5:\t%f%%\n', 100*(hour_5_sum-hour_4_sum)/hour_4_sum);
+
+%   Check most common alarm type
+
+
+
+%   Check average duration during hour 4
+
+
 % !! Write your own code for analysis (ref. codes for Task1 and Task2)
 
 fclose(fid);
