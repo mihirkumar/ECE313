@@ -166,7 +166,6 @@ set(gca,'XTickLabel',hours);
 fprintf(fid, '\n\nBONUS\n\n');
 % !! No codes provided (Bonus Question)
 
-
 % T3.
 fprintf(fid, '\n\nTask3\n\n');
 % !! Extract (split) the data that applies to your group
@@ -175,8 +174,7 @@ fprintf(fid, '\n\nTask3\n\n');
 %   We will be checking changes in:
 %       - Number of Alarms
 %       - Alarm Types
-%       - Alarm Causes
-%       - Average Durations
+%       - Alarm Causes (for System Alarms)
 %       - Alarms per Bed
 
 %   Check for number of alarms
@@ -185,16 +183,51 @@ hour_5_sum = sum(t_hours(:) == 5);
 fprintf(fid, 'Number of Alerts in Hour 4:\t%d\n', hour_4_sum);
 fprintf(fid, 'Number of Alerts in Hour 5:\t%d\n', hour_5_sum);
 fprintf(fid, 'Percent Change from Hour 4 to Hour 5:\t%f%%\n', 100*(hour_5_sum-hour_4_sum)/hour_4_sum);
+fprintf(fid, '\n');
 
-%   Check most common alarm type
+%   Check alarms by type
+hour_4_alarms = data(ismember(data.t_hours_tab, 4), :);
+hour_5_alarms = data(ismember(data.t_hours_tab, 5), :);
+fprintf(fid, 'In Hour 4, there were:\n');
+fprintf(fid, '\t => %5d  System Alarms\n', height(hour_4_alarms(ismember(hour_4_alarms.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t\t\t -> %5d  APP_ERR Instances\n', height(hour_4_alarms(ismember(hour_4_alarms.Cause, 'APP_ERR'), :)));
+fprintf(fid, '\t\t\t -> %5d  SIG_ARTIFACT Instances\n', height(hour_4_alarms(ismember(hour_4_alarms.Cause, 'SIG_ARTIFACT'), :)));
+fprintf(fid, '\t\t\t -> %5d  LEADS_FAILURE Instances\n', height(hour_4_alarms(ismember(hour_4_alarms.Cause, 'LEADS_FAILURE'), :)));
+fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(hour_4_alarms(ismember(hour_4_alarms.Cause, 'NW_ERR'), :)));
+fprintf(fid, '\t => %5d  Advisory Alarms\n', height(hour_4_alarms(ismember(hour_4_alarms.Alarm_Type, 'ADVISORY_ALARM'), :)));
+fprintf(fid, '\t => %5d  Warning Alarms\n', height(hour_4_alarms(ismember(hour_4_alarms.Alarm_Type, 'WARNING_ALARM'), :)));
+fprintf(fid, '\t => %5d  Crisis Alarms\n', height(hour_4_alarms(ismember(hour_4_alarms.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, 'In Hour 5, there were:\n');
+fprintf(fid, '\t => %5d  System Alarms\n', height(hour_5_alarms(ismember(hour_5_alarms.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t\t\t -> %5d  APP_ERR Instances\n', height(hour_5_alarms(ismember(hour_5_alarms.Cause, 'APP_ERR'), :)));
+fprintf(fid, '\t\t\t -> %5d  SIG_ARTIFACT Instances\n', height(hour_5_alarms(ismember(hour_5_alarms.Cause, 'SIG_ARTIFACT'), :)));
+fprintf(fid, '\t\t\t -> %5d  LEADS_FAILURE Instances\n', height(hour_5_alarms(ismember(hour_5_alarms.Cause, 'LEADS_FAILURE'), :)));
+fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(hour_5_alarms(ismember(hour_5_alarms.Cause, 'NW_ERR'), :)));
+fprintf(fid, '\t => %5d  Advisory Alarms\n', height(hour_5_alarms(ismember(hour_5_alarms.Alarm_Type, 'ADVISORY_ALARM'), :)));
+fprintf(fid, '\t => %5d  Warning Alarms\n', height(hour_5_alarms(ismember(hour_5_alarms.Alarm_Type, 'WARNING_ALARM'), :)));
+fprintf(fid, '\t => %5d  Crisis Alarms\n', height(hour_5_alarms(ismember(hour_5_alarms.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, '\n');
 
-%   Check most common alarm cause
-
-%   Check average duration
-
-%   Check alarms per bed
-
+%   Most Problematic Bed
+hour_4_problem_bed = mode(hour_4_alarms.Bed_No);
+hour_4_problem_bed_subset = hour_4_alarms(ismember(hour_4_alarms.Bed_No, hour_4_problem_bed), :);
+hour_5_problem_bed = mode(hour_5_alarms.Bed_No);
+hour_5_problem_bed_subset = hour_5_alarms(ismember(hour_5_alarms.Bed_No, hour_5_problem_bed), :);
+fprintf(fid, 'The Most Problematic Bed during Hour 4 was Bed #%d', hour_4_problem_bed);
+fprintf(fid, ' with %d alarms (%.5f%% of Hour 4''s total)\n', height(hour_4_problem_bed_subset), 100*height(hour_4_problem_bed_subset)/height(hour_4_alarms)); 
+fprintf(fid, '\t => %5d  System Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t => %5d  Advisory Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
+fprintf(fid, '\t => %5d  Warning Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
+fprintf(fid, '\t => %5d  Crisis Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, 'The Most Problematic Bed during Hour 5 was Bed #%d', mode(hour_5_alarms.Bed_No));
+fprintf(fid, ' with %d alarms (%.5f%% of Hour 5''s total)\n', height(hour_5_problem_bed_subset), 100*height(hour_5_problem_bed_subset)/height(hour_5_alarms)); 
+fprintf(fid, '\t => %5d  System Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t => %5d  Advisory Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
+fprintf(fid, '\t => %5d  Warning Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
+fprintf(fid, '\t => %5d  Crisis Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, '\n');
 
 % !! Write your own code for analysis (ref. codes for Task1 and Task2)
 
 fclose(fid);
+
