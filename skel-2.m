@@ -64,7 +64,7 @@ for i=1:4,
     % !! do the counts to derive your answers
     %find height of each cause
     data_WARNING_curr = height(data_WARNING(ismember(data_WARNING.Cause, causeWARNING{i}), :));
-    %divide each cause by total number in syste
+    %divide each cause by total number in system
     prob_i = data_WARNING_curr/numWARNING;
     fprintf(fid, 'P(%s) = %f\n', cell2mat(causeWARNING(i)), prob_i);
 end
@@ -137,14 +137,16 @@ end
 % T2.2.b
 
 fprintf(fid, '\n\nTask 2.2.b\n\n');
+  t_hours = array2table(t_hours);
+  data = [data t_hours];
 for i=1:24,
     % Please note that i loop from 1 to 24
     % The hours in the data are from 0 to 23
     % !! Split the data in terms of hours (t_hours(:) == 0)
-    data_i = data(t_hours(:) == (i-1));
+    data_i = data(ismember(data.t_hours, (i-1)), :);
     % !! Calculate the average duration for each hour(i)
-    
-    %fprintf(fid, 'Average duration for hh=%d = %f\n', "HOUR", "AVERAGE DURATION PER HOUR");
+    avg_i = mean(data_i.alarm_duration);
+    fprintf(fid, 'Average duration for hh=%d = %f\n', i-1, avg_i);
 end
 figure;
 % !! Draw a bar chart to plot the average duration per hour
