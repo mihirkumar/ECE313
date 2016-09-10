@@ -1,7 +1,7 @@
 %   FILL IN / MODIFY THE CODE WITH "" or comments with !!
 
 % import monitor_alarms.mat and put it in a 
-load('\\ad.uillinois.edu\engr\Instructional\alitz2\documents\MATLAB\monitor_alarms.mat');
+load('monitor_alarms.mat');
 data = MonitorAlarms;
 % not that the data is in a table format,
 % try the following in the command window:
