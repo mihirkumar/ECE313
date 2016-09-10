@@ -216,12 +216,20 @@ hour_5_problem_bed_subset = hour_5_alarms(ismember(hour_5_alarms.Bed_No, hour_5_
 fprintf(fid, 'The Most Problematic Bed during Hour 4 was Bed #%d', hour_4_problem_bed);
 fprintf(fid, ' with %d alarms (%.5f%% of Hour 4''s total)\n', height(hour_4_problem_bed_subset), 100*height(hour_4_problem_bed_subset)/height(hour_4_alarms)); 
 fprintf(fid, '\t => %5d  System Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t\t\t -> %5d  APP_ERR Instances\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Cause, 'APP_ERR'), :)));
+fprintf(fid, '\t\t\t -> %5d  SIG_ARTIFACT Instances\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Cause, 'SIG_ARTIFACT'), :)));
+fprintf(fid, '\t\t\t -> %5d  LEADS_FAILURE Instances\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Cause, 'LEADS_FAILURE'), :)));
+fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Cause, 'NW_ERR'), :)));
 fprintf(fid, '\t => %5d  Advisory Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
 fprintf(fid, '\t => %5d  Warning Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
 fprintf(fid, '\t => %5d  Crisis Alarms\n', height(hour_4_problem_bed_subset(ismember(hour_4_problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
 fprintf(fid, 'The Most Problematic Bed during Hour 5 was Bed #%d', mode(hour_5_alarms.Bed_No));
 fprintf(fid, ' with %d alarms (%.5f%% of Hour 5''s total)\n', height(hour_5_problem_bed_subset), 100*height(hour_5_problem_bed_subset)/height(hour_5_alarms)); 
 fprintf(fid, '\t => %5d  System Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t\t\t -> %5d  APP_ERR Instances\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Cause, 'APP_ERR'), :)));
+fprintf(fid, '\t\t\t -> %5d  SIG_ARTIFACT Instances\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Cause, 'SIG_ARTIFACT'), :)));
+fprintf(fid, '\t\t\t -> %5d  LEADS_FAILURE Instances\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Cause, 'LEADS_FAILURE'), :)));
+fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Cause, 'NW_ERR'), :)));
 fprintf(fid, '\t => %5d  Advisory Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
 fprintf(fid, '\t => %5d  Warning Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
 fprintf(fid, '\t => %5d  Crisis Alarms\n', height(hour_5_problem_bed_subset(ismember(hour_5_problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
@@ -230,4 +238,3 @@ fprintf(fid, '\n');
 % !! Write your own code for analysis (ref. codes for Task1 and Task2)
 
 fclose(fid);
-
