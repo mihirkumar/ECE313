@@ -176,6 +176,7 @@ fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(problem_bed_subset(isme
 fprintf(fid, '\t => %5d  Advisory Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
 fprintf(fid, '\t => %5d  Warning Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
 fprintf(fid, '\t => %5d  Crisis Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, '\t =>    Average Alarm Duration: %.5f seconds\n', mean(problem_bed_subset.alarm_duration));
 fprintf(fid, '\n');
 
 problem_bed_subset_2 = data(~ismember(data.Bed_No, problem_bed), :);
@@ -191,6 +192,7 @@ fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(problem_bed_subset_2(is
 fprintf(fid, '\t => %5d  Advisory Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'ADVISORY_ALARM'), :)));
 fprintf(fid, '\t => %5d  Warning Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'WARNING_ALARM'), :)));
 fprintf(fid, '\t => %5d  Crisis Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, '\t =>    Average Alarm Duration: %.5f seconds\n', mean(problem_bed_subset_2.alarm_duration));
 fprintf(fid, '\n');
 
 % !! No codes provided (Bonus Question)
