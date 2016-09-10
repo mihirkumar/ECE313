@@ -1,7 +1,7 @@
 %   FILL IN / MODIFY THE CODE WITH "" or comments with !!
 
 % import monitor_alarms.mat and put it in a 
-load('\\ad.uillinois.edu\engr\Instructional\alitz2\documents\MATLAB\monitor_alarms.mat');
+load('monitor_alarms.mat');
 data = MonitorAlarms;
 % not that the data is in a table format,
 % try the following in the command window:
@@ -176,6 +176,21 @@ fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(problem_bed_subset(isme
 fprintf(fid, '\t => %5d  Advisory Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
 fprintf(fid, '\t => %5d  Warning Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
 fprintf(fid, '\t => %5d  Crisis Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, '\n');
+
+problem_bed_subset_2 = data(~ismember(data.Bed_No, problem_bed), :);
+problem_bed_2 = mode(problem_bed_subset_2.Bed_No);
+problem_bed_subset_2 = data(ismember(problem_bed_subset_2.Bed_No, problem_bed_2), :);
+fprintf(fid, 'The Second Most Problematic Bed during the day was Bed #%d', problem_bed_2);
+fprintf(fid, ' with %d alarms (%.5f%% of day''s total)\n', height(problem_bed_subset_2), 100*height(problem_bed_subset_2)/height(data)); 
+fprintf(fid, '\t => %5d  System Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t\t\t -> %5d  APP_ERR Instances\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Cause, 'APP_ERR'), :)));
+fprintf(fid, '\t\t\t -> %5d  SIG_ARTIFACT Instances\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Cause, 'SIG_ARTIFACT'), :)));
+fprintf(fid, '\t\t\t -> %5d  LEADS_FAILURE Instances\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Cause, 'LEADS_FAILURE'), :)));
+fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Cause, 'NW_ERR'), :)));
+fprintf(fid, '\t => %5d  Advisory Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'ADVISORY_ALARM'), :)));
+fprintf(fid, '\t => %5d  Warning Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'WARNING_ALARM'), :)));
+fprintf(fid, '\t => %5d  Crisis Alarms\n', height(problem_bed_subset_2(ismember(problem_bed_subset_2.Alarm_Type, 'CRISIS_ALARM'), :)));
 fprintf(fid, '\n');
 
 % !! No codes provided (Bonus Question)
