@@ -164,6 +164,20 @@ set(gca,'XTickLabel',hours);
 
 % BONUS Find the two patient beds with the largest number of alarms,
 fprintf(fid, '\n\nBONUS\n\n');
+problem_bed = mode(data.Bed_No);
+problem_bed_subset = data(ismember(data.Bed_No, problem_bed), :);
+fprintf(fid, 'The Most Problematic Bed during the day was Bed #%d', problem_bed);
+fprintf(fid, ' with %d alarms (%.5f%% of day''s total)\n', height(problem_bed_subset), 100*height(problem_bed_subset)/height(data)); 
+fprintf(fid, '\t => %5d  System Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'SYSTEM_ALARM'), :)));
+fprintf(fid, '\t\t\t -> %5d  APP_ERR Instances\n', height(problem_bed_subset(ismember(problem_bed_subset.Cause, 'APP_ERR'), :)));
+fprintf(fid, '\t\t\t -> %5d  SIG_ARTIFACT Instances\n', height(problem_bed_subset(ismember(problem_bed_subset.Cause, 'SIG_ARTIFACT'), :)));
+fprintf(fid, '\t\t\t -> %5d  LEADS_FAILURE Instances\n', height(problem_bed_subset(ismember(problem_bed_subset.Cause, 'LEADS_FAILURE'), :)));
+fprintf(fid, '\t\t\t -> %5d  NW_ERR Instances\n', height(problem_bed_subset(ismember(problem_bed_subset.Cause, 'NW_ERR'), :)));
+fprintf(fid, '\t => %5d  Advisory Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'ADVISORY_ALARM'), :)));
+fprintf(fid, '\t => %5d  Warning Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'WARNING_ALARM'), :)));
+fprintf(fid, '\t => %5d  Crisis Alarms\n', height(problem_bed_subset(ismember(problem_bed_subset.Alarm_Type, 'CRISIS_ALARM'), :)));
+fprintf(fid, '\n');
+
 % !! No codes provided (Bonus Question)
 
 % T3.
