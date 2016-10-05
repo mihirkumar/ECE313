@@ -79,9 +79,20 @@ fprintf(fid, 'Observed Property of PDF = %s\n\n', 'F(X) is a non-decreasing and 
 
 % Part c
 % !! Using CDF of X, find values a and b such that P(X <= a) <= 0.02 and P(X <= b) >= 0.98.
+respRate_sorted = sort(respRate);
+i = 1;
+while p(i) <= 0.02
+    a = xi(i);
+    i = i + 1;
+end
 
-a = .02/.0033;
-b = .98/.0033;
+l = 30001;
+while p(l) >= 0.98
+    b = xi(l);
+    l = l - 1;
+end
+
+
 fprintf(fid, 'Task 1.1 - Part c\n');
 fprintf(fid, 'Empirical a = %f\n', a);
 fprintf(fid, 'Empirical b = %f\n\n', b);
@@ -100,28 +111,33 @@ fprintf(fid, 'Standard Deviation RESP = %f\n', std(respRate));
 
 % Part b
 % !! Generate a normal random variable with the same mean & standard deviation 
-respRate_normal = normrnd(mean_RESP, std(respRate));
+std_resp = std(respRate);
+acounter = 0;
+bcounter = 30000;
 for k = 1:30000
     % Pick a random sample of size sz(k) from the data set  
     % (Without replacement)
-    respRate_normal[k] = normrnd(mean_RESP, std(respRate));
+    respRate_normal(k) = normrnd(mean_RESP, std_resp);
+    respRate_normalized(k) = (respRate_normal(k)-mean_RESP)/std_resp;
+    if respRate_normalized(k) <= -2.05
+        acounter = acounter + 1;
+    end
+    if respRate_normalized(k) >= 2.05
+        bcounter = bcounter - 1;
+    end
 
 end
 
-    % Plot the CDF of the whole data set as the reference (in red color)
-    %figure;  
-    %subplot(2,1,1);
-    %[p, xi] = ecdf(respRate);
-    %plot(xi,p);
-    %hold on;% For the next plots to be on the same figure        
-    %h = get(gca,'children'); set(h,'LineWidth',2);set(h,'Color','r')
-    
-    % !! Call the funcion for calculating and ploting pdf and CDF of X     
-    
-    %title(strcat(strcat(char(labels(3)),' - Sample Size = '),char(num2str(sz(k)))));
-
 % !! Plot pdf and CDF of the generated random variable using pdf_cdf function
 figure;
+
+subplot(2,1,1);
+[p, xi] = ecdf(respRate_normal);
+plot(xi,p);
+hold on;% For the next plots to be on the same figure
+h = get(gca,'children'); set(h,'LineWidth',2);set(h,'Color','r')
+
+% !! Call the funcion for calculating and ploting pdf and CDF of X
 
 title(strcat(char(labels(3)),' Normal Approximation'));
 
@@ -136,8 +152,8 @@ normplot(respRate_normal);
 % Part d
 % !! Show your work in the report, then plug in the numbers that you calculated here
 fprintf(fid, 'Task 1.2 - Part d\n');
-%fprintf(fid, 'Theoretical a = %f\n', "Theoretical a");
-%fprintf(fid, 'Theoretical b = %f\n\n', "Theoretical b");
+fprintf(fid, 'Theoretical a = %f\n', respRate_sorted(acounter));
+fprintf(fid, 'Theoretical b = %f\n\n', respRate_sorted(bcounter));
 
 %% Task 2.1;
 % Tasks 2.1 and 2.2 should be done twice, 
