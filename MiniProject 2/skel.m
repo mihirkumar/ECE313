@@ -53,7 +53,8 @@ for k = 1:3
     hold on;% For the next plots to be on the same figure        
     h = get(gca,'children'); set(h,'LineWidth',2);set(h,'Color','r')
     
-    % !! Call the funcion for calculating and ploting pdf and CDF of X     
+    % !! Call the funcion for calculating and ploting pdf and CDF of X
+    pdf_cdf(Sample)
     
     title(strcat(strcat(char(labels(3)),' - Sample Size = '),char(num2str(sz(k)))));
 end
