@@ -130,15 +130,8 @@ end
 
 % !! Plot pdf and CDF of the generated random variable using pdf_cdf function
 figure;
-
-subplot(2,1,1);
-[p, xi] = ecdf(respRate_normal);
-plot(xi,p);
-hold on;% For the next plots to be on the same figure
-h = get(gca,'children'); set(h,'LineWidth',2);set(h,'Color','r')
-
 % !! Call the funcion for calculating and ploting pdf and CDF of X
-
+pdf_cdf(respRate_normalized)
 title(strcat(char(labels(3)),' Normal Approximation'));
 
 
@@ -174,21 +167,21 @@ fprintf(fid, 'Theoretical b = %f\n\n', respRate_sorted(bcounter));
 
 % Part d
 % !! Fill in the bar functions with the name of vectors storing your alarms
-figure;
-subplot(5,1,1);
+%figure;
+%subplot(5,1,1);
 %bar("HR Alarms");
-title(strcat(char(labels(1)),' Alarms'));
-subplot(5,1,2);
+%title(strcat(char(labels(1)),' Alarms'));
+%subplot(5,1,2);
 %bar("PR Alarms");
-title(strcat(char(labels(2)),' Alarms'));
-subplot(5,1,3);
+%title(strcat(char(labels(2)),' Alarms'));
+%subplot(5,1,3);
 %bar("RESP Alarms");
-title(strcat(char(labels(3)),' Alarms'));
-subplot(5,1,4);
+%title(strcat(char(labels(3)),' Alarms'));
+%subplot(5,1,4);
 %bar("Majority Voter Alarms");
-title('Majority Voter Alarms - Empirical Thresholds');
-subplot(5,1,5);
-title('Golden Alarms');
+%title('Majority Voter Alarms - Empirical Thresholds');
+%subplot(5,1,5);
+%title('Golden Alarms');
 %bar("Golden Alarms",'r');
 
 %% Task 2.2;
@@ -211,21 +204,21 @@ fprintf(fid, 'Using Empirical Thresholds:\n');
 
 
 
-figure;
-subplot(5,1,1);
+%figure;
+%subplot(5,1,1);
 %bar("HR Alarms");
-title(strcat(char(labels(1)),' Alarms'));
-subplot(5,1,2);
+%title(strcat(char(labels(1)),' Alarms'));
+%subplot(5,1,2);
 %bar("PR Alarms");
-title(strcat(char(labels(2)),' Alarms'));
-subplot(5,1,3);
+%title(strcat(char(labels(2)),' Alarms'));
+%subplot(5,1,3);
 %bar("RESP Alarms");
-title(strcat(char(labels(3)),' Alarms'));
-subplot(5,1,4);
+%title(strcat(char(labels(3)),' Alarms'));
+%subplot(5,1,4);
 %bar("Majority Voter Alarms");
-title('Majority Voter Alarms - Theoretical Thresholds');
-subplot(5,1,5);
-title('Golden Alarms');
+%title('Majority Voter Alarms - Theoretical Thresholds');
+%subplot(5,1,5);
+%title('Golden Alarms');
 %bar("Golden Alarms",'r');
 
 
@@ -249,22 +242,22 @@ fprintf(fid, 'Task 3 - Part a\n');
 
 % Parts b
 % !! Derive the time interval between to consecutive alarms, and generate alarms up to 3,000 windows
-i = 0;
-while (i < 3000)
+%i = 0;
+%while (i < 3000)
 	% generate a exp. random number.
 	
 	% mark the sample window indicated by the time interval
 	
 	
-end 
+%end 
 
 % !! Fill in the bar functions with the name of vectors storing your alarms
-figure;
-subplot(2, 1, 1);
+%figure;
+%subplot(2, 1, 1);
 %bar("Golden Alarms");
 %title('Golden Alarms'));
 
-subplot(2, 1, 2);
+%subplot(2, 1, 2);
 %bar("Exp. dist Alarms");
 %title('Exp. dist Alarms'));
 

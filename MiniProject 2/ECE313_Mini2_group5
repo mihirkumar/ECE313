@@ -6,19 +6,20 @@ Max of tabulate(floor(X)) = 5.490000
 Observed Property of PDF = F(X) is a non-decreasing and Gaussian distribution.
 
 Task 1.1 - Part c
-Empirical a = 6.060606
-Empirical b = 296.969697
+Empirical a = 10.146654
+Empirical b = 37.095505
 
 Task 1.2 - Part a
 Mean RESP = 21.741818
 
 Standard Deviation RESP = 7.104292
 Task 1.2 - Part d
-Theoretical a = 10.169811
-Theoretical b = 37.095505
+Theoretical a = 10.108482
+Theoretical b = 37.004095
 
 Task 2.2 - Parts a and b
 Using Empirical Thresholds:
 Task 2.2 - Part c
 Using Theoretical Thresholds:
 Task 3 - Part a
+Task 3 - Part c
