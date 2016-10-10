@@ -174,7 +174,41 @@ end
 % Parts b and c
 % !! Write the code for coalescing alarms and majority voting here 
 
-
+for i = 1:3000
+    flag_HR_empirical = 0;
+    flag_HR_theoretical = 0;
+    flag_PR_empirical = 0;
+    flag_PR_theoretical = 0;
+    flag_RESP_empirical = 0;
+    flag_RESP_theoretical = 0;
+    k = (i-1)*10;
+    for j = 1:10
+        if HR_empirical_threshold(k+j) == 1;
+            flag_HR_empirical = 1;
+        end
+        if HR_theoretical_threshold(k+j) == 1;
+            flag_HR_theoretical = 1;
+        end
+        if PR_empirical_threshold(k+j) == 1;
+            flag_PR_empirical = 1;
+        end
+        if PR_theoretical_threshold(k+j) == 1;
+            flag_PR_theoretical = 1;
+        end
+        if RESP_empirical_threshold(k+j) == 1;
+            flag_RESP_empirical = 1;
+        end
+        if RESP_empirical_threshold(k+j) == 1;
+            flag_RESP_theoretical = 1;
+        end
+    end
+    HR_empirical_threshold_10(i) = flag_HR_empirical;
+    HR_theoretical_threshold_10(i) = flag_HR_theoretical;
+    PR_empirical_threshold_10(i) = flag_PR_empirical;
+    PR_theoretical_threshold_10(i) = flag_PR_theoretical;
+    RESP_empirical_threshold_10(i) = flag_RESP_empirical;
+    RESP_empirical_threshold_10(i) = flag_RESP_theoretical;
+end
 
 
 
