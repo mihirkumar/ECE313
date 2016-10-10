@@ -211,6 +211,24 @@ for i = 1:3000
 end
 
 
+for k = 1:3000
+
+    if(HR_empirical_threshold_10(k) + PR_empirical_threshold_10(k) + RESP_empirical_threshold_10(k) >= 2) {
+        empirical_alarm(k) = 1;
+    }
+    else {
+        empirical_alarm(k) = 0;
+    }
+
+    if(HR_theoretical_threshold_10(k) + PR_theoretical_threshold_10(k) + RESP_theoretical_threshold_10(k) >= 2) {
+        theoretical_alarm(k) = 1;
+    }
+    else {
+        theoretical_alarm(k) = 0;
+    }
+
+end
+
 
 % Part d
 % !! Fill in the bar functions with the name of vectors storing your alarms
