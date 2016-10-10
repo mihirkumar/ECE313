@@ -207,25 +207,24 @@ for i = 1:3000
     PR_empirical_threshold_10(i) = flag_PR_empirical;
     PR_theoretical_threshold_10(i) = flag_PR_theoretical;
     RESP_empirical_threshold_10(i) = flag_RESP_empirical;
-    RESP_empirical_threshold_10(i) = flag_RESP_theoretical;
+    RESP_theoretical_threshold_10(i) = flag_RESP_theoretical;
 end
 
 
 for k = 1:3000
 
-    if(HR_empirical_threshold_10(k) + PR_empirical_threshold_10(k) + RESP_empirical_threshold_10(k) >= 2) {
+    if(HR_empirical_threshold_10(k) + PR_empirical_threshold_10(k) + RESP_empirical_threshold_10(k) >= 2)
         empirical_alarm(k) = 1;
-    }
-    else {
+    else
         empirical_alarm(k) = 0;
-    }
+    end
 
-    if(HR_theoretical_threshold_10(k) + PR_theoretical_threshold_10(k) + RESP_theoretical_threshold_10(k) >= 2) {
+
+    if(HR_theoretical_threshold_10(k) + PR_theoretical_threshold_10(k) + RESP_theoretical_threshold_10(k) >= 2)
         theoretical_alarm(k) = 1;
-    }
-    else {
+    else
         theoretical_alarm(k) = 0;
-    }
+    end
 
 end
 
