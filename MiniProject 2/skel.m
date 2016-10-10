@@ -156,7 +156,19 @@ fprintf(fid, 'Theoretical b = %f\n\n', respRate_sorted(bcounter));
 
 % Part a
 % !! Call the threshold function and generate alarms for each signal
+for k = 1:30000
+   
+% Calculate for empirical threshold
+HR_empirical_threshold(k) = threshold_func(heartRate(k), 80.17, 98.52);
+PR_empirical_threshold(k) = threshold_func(pulseRate(k), 79.00, 97.07);
+RESP_empirical_threshold(k) = threshold_func(respRate(k), a, b);
 
+%calculate for theoretical threshold
+HR_theoretical_threshold(k) = threshold_func(heartRate(k), 78.84, 96.86);
+PR_theoretical_threshold(k) = threshold_func(pulseRate(k), 78.15, 96.09);
+RESP_theoretical_threshold(k) = threshold_func(respRate(k), respRate_sorted(acounter), respRate_sorted(bcounter));
+
+end
 
 
 % Parts b and c
