@@ -231,29 +231,69 @@ end
 
 % Part d
 % !! Fill in the bar functions with the name of vectors storing your alarms
-%figure;
-%subplot(5,1,1);
-%bar("HR Alarms");
-%title(strcat(char(labels(1)),' Alarms'));
-%subplot(5,1,2);
-%bar("PR Alarms");
-%title(strcat(char(labels(2)),' Alarms'));
-%subplot(5,1,3);
-%bar("RESP Alarms");
-%title(strcat(char(labels(3)),' Alarms'));
-%subplot(5,1,4);
-%bar("Majority Voter Alarms");
-%title('Majority Voter Alarms - Empirical Thresholds');
-%subplot(5,1,5);
-%title('Golden Alarms');
-%bar("Golden Alarms",'r');
+
+% empirical thresholds
+figure;
+subplot(5,1,1);
+bar(HR_empirical_threshold_10);
+title(strcat(char(labels(1)),' Alarms'));
+subplot(5,1,2);
+bar(PR_empirical_threshold_10);
+title(strcat(char(labels(2)),' Alarms'));
+subplot(5,1,3);
+bar(RESP_empirical_threshold_10);
+title(strcat(char(labels(3)),' Alarms'));
+subplot(5,1,4);
+bar(empirical_alarm);
+title('Majority Voter Alarms - Empirical Thresholds');
+subplot(5,1,5);
+title('Golden Alarms');
+bar(golden_alarms,'r');
+
+% theoretical thresholds
+figure;
+subplot(5,1,1);
+bar(HR_theoretical_threshold_10);
+title(strcat(char(labels(1)),' Alarms'));
+subplot(5,1,2);
+bar(PR_theoretical_threshold_10);
+title(strcat(char(labels(2)),' Alarms'));
+subplot(5,1,3);
+bar(RESP_theoretical_threshold_10);
+title(strcat(char(labels(3)),' Alarms'));
+subplot(5,1,4);
+bar(theoretical_alarm);
+title('Majority Voter Alarms - Theoretical Thresholds');
+subplot(5,1,5);
+title('Golden Alarms');
+bar(golden_alarms,'r');
 
 %% Task 2.2;
 % Parts a and b
 % !! Write the code to calculate the probabilities of:
 %    false alarm, miss detection and error 
 
+empirical_miss_detection = 0;
+empirical_false_alarm = 0;
+threshold_miss_detection = 0;
+theoretical_false_alarm = 0;
 
+for k = 1:3000
+    if(golden_alarms(k) && ~empirical_alarm(k))
+        empirical_miss_detection = empirical_miss_detection + 1;
+    end
+    if(~golden_alarms(k) && empirical_alarm(k))
+        empirical_false_alarm = empirical_false_alarm + 1;
+    end
+    
+    if(golden_alarms(k) && ~theoretical_alarm(k))
+        theoretical_miss_detection = theoretical_miss_detection + 1;
+    end
+    if(~golden_alarms(k) && theoretical_alarm(k))
+        theoretical_false_alarm = theoretical_false_alarm + 1;
+    end
+        
+end
 
 
 
