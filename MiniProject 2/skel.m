@@ -274,22 +274,15 @@ for k = 1:3000
     if(~golden_alarms(k) && theoretical_alarm(k))
         theoretical_false_alarm = theoretical_false_alarm + 1;
     end
-       
+   
 end
-
-physician_abnormality_sum = sum(golden_alarms);
-empirical_alarm_sum = sum(empirical_alarm);
-theoretical_alarm_sum = sum(theoretical_alarm);
-
-empirical_error = empirical_miss_detection + empirical_false_alarm;
-theoretical_error = theoretical_miss_detection + theoretical_false_alarm;
-
-
+  empirical_error = empirical_false_alarm + empirical_miss_detection;
+  
 fprintf(fid, 'Task 2.2 - Parts a and b\n');
 fprintf(fid, 'Using Empirical Thresholds:\n');
-fprintf(fid, 'Probability of False Alarm    = %f\n', empirical_false_alarm / empirical_alarm_sum);
-fprintf(fid, 'Probability of Miss Detection = %f\n', empirical_miss_detection / empirical_alarm_sum);
-fprintf(fid, 'Probability of Error          = %f\n\n', empirical_error / empirical_alarm_sum);
+fprintf(fid, 'Probability of False Alarm    = %f\n', empirical_false_alarm / sum(empirical_alarm));
+fprintf(fid, 'Probability of Miss Detection = %f\n', empirical_miss_detection / sum(golden_alarms));
+fprintf(fid, 'Probability of Error          = %f\n\n', empirical_error / (sum(empirical_alarm) + sum(golden_alarms)));
 
 % Part c
 % !! Repeat Tasks 2.1 and 2.2 with Theoretical thresholds
@@ -311,12 +304,12 @@ title('Majority Voter Alarms - Theoretical Thresholds');
 subplot(5,1,5);
 title('Golden Alarms');
 bar(golden_alarms,'r');
-
+theoretical_error = theoretical_false_alarm + theoretical_miss_detection;
 fprintf(fid, 'Task 2.2 - Part c\n');
 fprintf(fid, 'Using Theoretical Thresholds:\n');
-fprintf(fid, 'Probability of False Alarm    = %f\n', theoretical_false_alarm / theoretical_alarm_sum);
-fprintf(fid, 'Probability of Miss Detection = %f\n', theoretical_miss_detection / theoretical_alarm_sum);
-fprintf(fid, 'Probability of Error          = %f\n\n', theoretical_error / theoretical_alarm_sum);
+fprintf(fid, 'Probability of False Alarm    = %f\n', theoretical_false_alarm / sum(theoretical_alarm));
+fprintf(fid, 'Probability of Miss Detection = %f\n', theoretical_miss_detection / sum(golden_alarms));
+fprintf(fid, 'Probability of Error          = %f\n\n', theoretical_error / (sum(empirical_alarm) + sum(golden_alarms)));
 
 %% Task 3
 % Part a
@@ -326,19 +319,18 @@ alarm_rate = sum(golden_alarms)/3000;
 fprintf(fid, 'Task 3 - Part a\n');
 fprintf(fid, 'Rate of alarms in Golden alarms= %f\n', alarm_rate);
 
-
-
 % Parts b
 % !! Derive the time interval between to consecutive alarms, and generate alarms up to 3,000 windows
 alarm_win_array = zeros(1, 3000);
-i = 0;
+k = 0;
 expRand = 0;
-while (i < 3000)
+while (k < 3000)
 	% generate a exp. random number.
-	expRand = exprnd(1/alarm_rate);
+	k = k + exprnd(1/alarm_rate);
 	% mark the sample window indicated by the time interval
-    alarm_win_array(floor(expRand)+1) = alarm_win_array(floor(expRand)+1) + 1;
-	
+    if (k < 3000)
+        alarm_win_array(ceil(k)+1) = alarm_win_array(ceil(k)+1) + 1;
+    end
 end 
 
 % !! Fill in the bar functions with the name of vectors storing your alarms
@@ -356,24 +348,41 @@ title('Exp. dist Alarms');
 % !! Write the code to calculate the probabilities of:
 %    false alarm, miss detection and error 
 
-% Note, please make sure to consider the tolerance interval when evaluating the performance of the Exp. distribution based detector.
-%for i = 1:3000
- %   exponential_flag = 0;
-  %   k = (i-1)*10;
-   % for j = 1:10
-    %    if exponential_flag(k+j) == 1;
-     %       flag_HR_empirical = 1;
-      %  end
-%    end
- %   HR_empirical_threshold_10(i) = flag_HR_empirical;
-%end
+% Note, please make sure to consider the tolerance interval when evaluating
+% the performance of the Exp. distribution based detector.
+false_pos_total = 0;
+missed_detect_total = 0;
+for n = 1:3000
+    if alarm_win_array(n) == 1
+        false_pos_flag = 1;
+        for j = 1:101
+            if (n+j-51) > 1 && (n+j-51) < 3000
+                if golden_alarms(n + j-51) == 1
+                    false_pos_flag = 0;
+                end
+            end
+        end
+        false_pos_total = false_pos_total + false_pos_flag;
+    end
+    if golden_alarms(n) == 1
+        missed_detect = 1;
+        for j = 1:101
+            if (n+j-51) > 1 && (n+j-51) < 3000
+                if alarm_win_array(n + j-51) == 1
+                    missed_detect = 0;
+                end
+            end
+        end
+        missed_detect_total = missed_detect_total + missed_detect;
+    end
+end
 
-
+error = false_pos_total + missed_detect_total;
 
 fprintf(fid, 'Task 3 - Part c\n');
-%fprintf(fid, 'Probability of False Alarm    = %f\n', "False Alarm");
-%fprintf(fid, 'Probability of Miss Detection = %f\n', "Miss Detect");
-%fprintf(fid, 'Probability of Error          = %f\n\n', "Error");
+fprintf(fid, 'Probability of False Alarm    = %f\n', false_pos_total/sum(alarm_win_array));
+fprintf(fid, 'Probability of Miss Detection = %f\n', missed_detect_total/sum(golden_alarms));
+fprintf(fid, 'Probability of Error          = %f\n\n', error/(sum(golden_alarms)+ sum(alarm_win_array)));
 
 
 fclose(fid);
