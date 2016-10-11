@@ -321,33 +321,35 @@ fprintf(fid, 'Probability of Error          = %f\n\n', theoretical_error / theor
 %% Task 3
 % Part a
 % !! Calculate the rate of alarms
-
+alarm_rate = sum(golden_alarms)/3000;
 
 fprintf(fid, 'Task 3 - Part a\n');
-%fprintf(fid, 'Rate of alarms in Golden alarms= %f\n', "Golden Alarm Rate");
+fprintf(fid, 'Rate of alarms in Golden alarms= %f\n', alarm_rate);
 
 
 
 % Parts b
 % !! Derive the time interval between to consecutive alarms, and generate alarms up to 3,000 windows
-%i = 0;
-%while (i < 3000)
+alarm_win_array = zeros(1, 3000);
+i = 0;
+expRand = 0;
+while (i < 3000)
 	% generate a exp. random number.
-	
+	expRand = exprnd(1/alarm_rate);
 	% mark the sample window indicated by the time interval
+    alarm_win_array(floor(expRand)+1) = alarm_win_array(floor(expRand)+1) + 1;
 	
-	
-%end 
+end 
 
 % !! Fill in the bar functions with the name of vectors storing your alarms
-%figure;
-%subplot(2, 1, 1);
-%bar("Golden Alarms");
-%title('Golden Alarms'));
+figure;
+subplot(2, 1, 1);
+bar(golden_alarms);
+title('Golden Alarms');
 
-%subplot(2, 1, 2);
-%bar("Exp. dist Alarms");
-%title('Exp. dist Alarms'));
+subplot(2, 1, 2);
+bar(alarm_win_array);
+title('Exp. dist Alarms');
 
 
 % Part c
@@ -355,6 +357,18 @@ fprintf(fid, 'Task 3 - Part a\n');
 %    false alarm, miss detection and error 
 
 % Note, please make sure to consider the tolerance interval when evaluating the performance of the Exp. distribution based detector.
+%for i = 1:3000
+ %   exponential_flag = 0;
+  %   k = (i-1)*10;
+   % for j = 1:10
+    %    if exponential_flag(k+j) == 1;
+     %       flag_HR_empirical = 1;
+      %  end
+%    end
+ %   HR_empirical_threshold_10(i) = flag_HR_empirical;
+%end
+
+
 
 fprintf(fid, 'Task 3 - Part c\n');
 %fprintf(fid, 'Probability of False Alarm    = %f\n', "False Alarm");
@@ -363,4 +377,3 @@ fprintf(fid, 'Task 3 - Part c\n');
 
 
 fclose(fid);
-
