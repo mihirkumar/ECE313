@@ -250,24 +250,6 @@ subplot(5,1,5);
 title('Golden Alarms');
 bar(golden_alarms,'r');
 
-% theoretical thresholds
-figure;
-subplot(5,1,1);
-bar(HR_theoretical_threshold_10);
-title(strcat(char(labels(1)),' Alarms'));
-subplot(5,1,2);
-bar(PR_theoretical_threshold_10);
-title(strcat(char(labels(2)),' Alarms'));
-subplot(5,1,3);
-bar(RESP_theoretical_threshold_10);
-title(strcat(char(labels(3)),' Alarms'));
-subplot(5,1,4);
-bar(theoretical_alarm);
-title('Majority Voter Alarms - Theoretical Thresholds');
-subplot(5,1,5);
-title('Golden Alarms');
-bar(golden_alarms,'r');
-
 %% Task 2.2;
 % Parts a and b
 % !! Write the code to calculate the probabilities of:
@@ -309,42 +291,32 @@ fprintf(fid, 'Probability of False Alarm    = %f\n', empirical_false_alarm / emp
 fprintf(fid, 'Probability of Miss Detection = %f\n', empirical_miss_detection / empirical_alarm_sum);
 fprintf(fid, 'Probability of Error          = %f\n\n', empirical_error / empirical_alarm_sum);
 
+% Part c
+% !! Repeat Tasks 2.1 and 2.2 with Theoretical thresholds
+
+% theoretical thresholds
+figure;
+subplot(5,1,1);
+bar(HR_theoretical_threshold_10);
+title(strcat(char(labels(1)),' Alarms'));
+subplot(5,1,2);
+bar(PR_theoretical_threshold_10);
+title(strcat(char(labels(2)),' Alarms'));
+subplot(5,1,3);
+bar(RESP_theoretical_threshold_10);
+title(strcat(char(labels(3)),' Alarms'));
+subplot(5,1,4);
+bar(theoretical_alarm);
+title('Majority Voter Alarms - Theoretical Thresholds');
+subplot(5,1,5);
+title('Golden Alarms');
+bar(golden_alarms,'r');
+
+fprintf(fid, 'Task 2.2 - Part c\n');
 fprintf(fid, 'Using Theoretical Thresholds:\n');
 fprintf(fid, 'Probability of False Alarm    = %f\n', theoretical_false_alarm / theoretical_alarm_sum);
 fprintf(fid, 'Probability of Miss Detection = %f\n', theoretical_miss_detection / theoretical_alarm_sum);
 fprintf(fid, 'Probability of Error          = %f\n\n', theoretical_error / theoretical_alarm_sum);
-
-
-% Part c
-% !! Repeat Tasks 2.1 and 2.2 with Theoretical thresholds
-
-
-
-%figure;
-%subplot(5,1,1);
-%bar("HR Alarms");
-%title(strcat(char(labels(1)),' Alarms'));
-%subplot(5,1,2);
-%bar("PR Alarms");
-%title(strcat(char(labels(2)),' Alarms'));
-%subplot(5,1,3);
-%bar("RESP Alarms");
-%title(strcat(char(labels(3)),' Alarms'));
-%subplot(5,1,4);
-%bar("Majority Voter Alarms");
-%title('Majority Voter Alarms - Theoretical Thresholds');
-%subplot(5,1,5);
-%title('Golden Alarms');
-%bar("Golden Alarms",'r');
-
-
-fprintf(fid, 'Task 2.2 - Part c\n');
-fprintf(fid, 'Using Theoretical Thresholds:\n');
-%fprintf(fid, 'Probability of False Alarm    = %f\n', "False Alarm");
-%fprintf(fid, 'Probability of Miss Detection = %f\n', "Miss Detect");
-%fprintf(fid, 'Probability Error             = %f\n\n', "Error");
-
-
 
 %% Task 3
 % Part a

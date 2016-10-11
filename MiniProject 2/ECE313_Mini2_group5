@@ -14,11 +14,20 @@ Mean RESP = 21.741818
 
 Standard Deviation RESP = 7.104292
 Task 1.2 - Part d
-Theoretical a = 10.140701
-Theoretical b = 37.085962
+Theoretical a = 10.153003
+Theoretical b = 37.053919
 
 Task 2.2 - Parts a and b
 Using Empirical Thresholds:
+Probability of False Alarm    = 0.786517
+Probability of Miss Detection = 0.000000
+Probability of Error          = 0.786517
+
+Using Theoretical Thresholds:
+Probability of False Alarm    = 0.753247
+Probability of Miss Detection = 0.000000
+Probability of Error          = 0.753247
+
 Task 2.2 - Part c
 Using Theoretical Thresholds:
 Task 3 - Part a
