@@ -275,7 +275,7 @@ bar(golden_alarms,'r');
 
 empirical_miss_detection = 0;
 empirical_false_alarm = 0;
-threshold_miss_detection = 0;
+theoretical_miss_detection = 0;
 theoretical_false_alarm = 0;
 
 for k = 1:3000
@@ -292,16 +292,28 @@ for k = 1:3000
     if(~golden_alarms(k) && theoretical_alarm(k))
         theoretical_false_alarm = theoretical_false_alarm + 1;
     end
-        
+       
 end
 
+physician_abnormality_sum = sum(golden_alarms);
+empirical_alarm_sum = sum(empirical_alarm);
+theoretical_alarm_sum = sum(theoretical_alarm);
+
+empirical_error = empirical_miss_detection + empirical_false_alarm;
+theoretical_error = theoretical_miss_detection + theoretical_false_alarm;
 
 
 fprintf(fid, 'Task 2.2 - Parts a and b\n');
 fprintf(fid, 'Using Empirical Thresholds:\n');
-%fprintf(fid, 'Probability of False Alarm    = %f\n', "False Alarm");
-%fprintf(fid, 'Probability of Miss Detection = %f\n', "Miss Detect");
-%fprintf(fid, 'Probability of Error          = %f\n\n', "Error");
+fprintf(fid, 'Probability of False Alarm    = %f\n', empirical_false_alarm / empirical_alarm_sum);
+fprintf(fid, 'Probability of Miss Detection = %f\n', empirical_miss_detection / empirical_alarm_sum);
+fprintf(fid, 'Probability of Error          = %f\n\n', empirical_error / empirical_alarm_sum);
+
+fprintf(fid, 'Using Theoretical Thresholds:\n');
+fprintf(fid, 'Probability of False Alarm    = %f\n', theoretical_false_alarm / theoretical_alarm_sum);
+fprintf(fid, 'Probability of Miss Detection = %f\n', theoretical_miss_detection / theoretical_alarm_sum);
+fprintf(fid, 'Probability of Error          = %f\n\n', theoretical_error / theoretical_alarm_sum);
+
 
 % Part c
 % !! Repeat Tasks 2.1 and 2.2 with Theoretical thresholds
