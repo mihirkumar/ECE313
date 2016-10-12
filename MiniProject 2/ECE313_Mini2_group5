@@ -14,21 +14,25 @@ Mean RESP = 21.741818
 
 Standard Deviation RESP = 7.104292
 Task 1.2 - Part d
-Theoretical a = 10.153003
-Theoretical b = 37.053919
+Theoretical a = 10.282710
+Theoretical b = 37.117989
 
 Task 2.2 - Parts a and b
 Using Empirical Thresholds:
 Probability of False Alarm    = 0.786517
 Probability of Miss Detection = 0.000000
-Probability of Error          = 0.786517
-
-Using Theoretical Thresholds:
-Probability of False Alarm    = 0.753247
-Probability of Miss Detection = 0.000000
-Probability of Error          = 0.753247
+Probability of Error          = 0.648148
 
 Task 2.2 - Part c
 Using Theoretical Thresholds:
+Probability of False Alarm    = 0.753247
+Probability of Miss Detection = 0.000000
+Probability of Error          = 0.537037
+
 Task 3 - Part a
+Rate of alarms in Golden alarms= 0.006333
 Task 3 - Part c
+Probability of False Alarm    = 0.777778
+Probability of Miss Detection = 0.368421
+Probability of Error          = 0.567568
+
