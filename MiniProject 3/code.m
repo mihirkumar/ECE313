@@ -76,41 +76,75 @@ for k = 1:9
         plot(likelyH0(:,3)); 
         hold on; 
         plot(likelyH1(:,3));
+    %figure out quartiles and save them
+        max1 = max(likelyH1(:,1)); 
+        max2 = max(likelyH0(:,1));
+        max_val = max(max1,max2);
+        min1 = min(likelyH1(:,1)); 
+        min2 = min(likelyH0(:,1));
+        min_val = min(min1,min2);
+        middle = floor((max_val - min_val)/2);
+        first_quarter = floor((middle - min_val)/2);
+        third_quarter = floor((max_val - middle)/2);
+        train(k).H1(j,1:4) = zeros();
+        train(k).H0(j,1:4) = zeros();
+        for i = 1:size(likelyH1) 
+           if (likelyH1(i,1) < first_quarter) 
+                percent = likelyH1(i,3);
+                p = 1;
+           elseif (likelyH1(i,1) < middle)
+                percent = likelyH1(i,3);
+                p = 2;
+           elseif (likelyH1(i,1) < third_quarter)
+                percent = likelyH1(i,3);
+                p = 3;
+           else
+                percent = likelyH1(i,3);
+                p = 4;
+           end
+           train(k).H1(j,p) = train(k).H1(j,p)+ percent;
+        end
+        
+        for i = 1:size(likelyH0) 
+           if (likelyH0(i,1) < first_quarter) 
+                percent = likelyH0(i,3);
+                p = 1;
+           elseif (likelyH0(i,1) < middle)
+                percent = likelyH0(i,3);
+                p = 2;
+           elseif (likelyH0(i,1) < third_quarter)
+                percent = likelyH0(i,3);
+                p = 3;
+           else
+                percent = likelyH0(i,3);
+                p = 4;
+           end
+           train(k).H0(j,p) = train(k).H0(j,p)+ percent;
+        end
     end
     
     legend('H0 pmf', 'H1 pmf');
     
 end
-labels = {'MEAN AREA UNDER HEART BEAT', 'MEAN R TO R PEAK INTERVAL', 'NUMBER OF BEATS PER MINUTE', 'PEAK TO PEAK INTERVAL FOR BP','SYSTOLIC BP', 'DIASTOLIC BP', 'PULSE PRESSURE'}; 
+
+%c: show results by generating a seperate figure for each patient 
+%c Executed in B
+
+%d: Calculate ML and MAP decision rule vectors
 for k = 1:9
     for j = 1:7
-        percent_1st = 0;
-        percent_2nd = 0;
-        percent_3rd = 0;
-        percent_4th = 0;
-        index = 0;
-        max1 = max(train(k).likelyH1(:,1)); 
-        max2 = max(train(k).likelyH0(:,1));
-        max_val = max(max1,max2);
-        min1 = min(train(k).likelyH1(:,1)); 
-        min2 = min(train(k).likelyH0(:,1));
-        min_val = min(min1,min2);
-        middle = floor((max_val - min_val)/2);
-        first_quarter = floor((middle - min_val)/2);
-        third_quarter = floor((max_val - middle)/2);
-        i = 1;
-        for i = 1:length(train(k).likelyH1)
-           if (train(k).likelyH1(i,1) < first_quarter) 
-                percent_1st = train(k).likelyH1(:,3) + percent_1st;
-           elseif (train(k).likelyH1(i,1) < middle)
-                percent_2nd = train(k).likelyH1(:,3) + percent_2nd;
-           elseif (train(k).likelyH1(i,1) < third_quarter)
-                percent_3rd = train(k).likelyH1(:,3) + percent_3rd;
-           else
-                percent_4th = train(k).likelyH1(:,3) + percent_4th;
-           end
+        for p = 1:4
+            if( train(k).H1(j,p) >= train(k).H0(j,p))
+                train(k).ML(j,p) = 1;
+            else 
+                train(k).ML(j,p) = 0;
+            end
+            if(train(k).H1(j,p) * prior_H1 >= train(k).H0(j,p)*prior_H0)
+                train(k).MAP(j,p) = 1;
+            else
+                train(k).MAP(j,p) = 0;
+            end
         end
     end
 end
-%c: show results by generating a seperate figure for each patient 
-%c Executed in B
+%e: save the results in a 9 by 7 cell array called HT_table_array
