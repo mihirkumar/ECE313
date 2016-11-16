@@ -34,8 +34,8 @@ end
 for k = 1:9
     train(k).all_data = dat_array(k).all_data(:,1:training_length(k));
     train(k).all_labels = dat_array(k).all_labels(:,1:training_length(k));
-    test(k).all_data = dat_array(k).all_data(:, training_length(k):all_length(k));
-    test(k).all_labels = dat_array(k).all_labels(:, training_length(k):all_length(k));
+    test(k).all_data = dat_array(k).all_data(:, training_length(k)+1:all_length(k));
+    test(k).all_labels = dat_array(k).all_labels(:, training_length(k)+1:all_length(k));
 end
 for k = 1:9
    for j = 1:7
@@ -65,12 +65,19 @@ for k = 1:9
 end
 %b: construct likelihood matrices for each of the seven features
 for k = 1:9
+    figure;
     for j = 1:7
         train(k).likelyH1= tabulate(train(k).goldens(j,:));
             train(k).likelyH1(:,3) = train(k).likelyH1(:,3) / 3;
         train(k).likelyH0 = tabulate(train(k).nongoldens(j,:));
             train(k).likelyH0(:,3) = train(k).likelyH0(:,3) / 3;
+        subplot(7, 1, j); 
+        plot(train(k).likelyH0(:,3)); 
+        hold on; 
+        plot(train(k).likelyH1(:,3));
+        legend('H0 pmf', 'H1 pmf');
     end
+    
 end
 labels = {'MEAN AREA UNDER HEART BEAT', 'MEAN R TO R PEAK INTERVAL', 'NUMBER OF BEATS PER MINUTE', 'PEAK TO PEAK INTERVAL FOR BP','SYSTOLIC BP', 'DIASTOLIC BP', 'PULSE PRESSURE'}; 
 for k = 1:9
@@ -89,17 +96,19 @@ for k = 1:9
         middle = floor((max_val - min_val)/2);
         first_quarter = floor((middle - min_val)/2);
         third_quarter = floor((max_val - middle)/2);
-        while(train(k).likelyH1(:,1) < first_quarter)
-            percent_1st = train(k).likelyH1(:,1) + percent_first;
+        i = 1;
+        for i = 1:length(train(k).likelyH1)
+           if (train(k).likelyH1(i,1) < first_quarter) 
+                percent_1st = train(k).likelyH1(:,3) + percent_1st;
+           elseif (train(k).likelyH1(i,1) < middle)
+                percent_2nd = train(k).likelyH1(:,3) + percent_2nd;
+           elseif (train(k).likelyH1(i,1) < third_quarter)
+                percent_3rd = train(k).likelyH1(:,3) + percent_3rd;
+           else
+                percent_4th = train(k).likelyH1(:,3) + percent_4th;
+           end
         end
     end
 end
-%c: show results by generating a seperate figure for each patient
-for k = 1:9
- subplot(7, 1, k); 
- plot(H0_pmf(:)); 
- hold on; 
- plot(H1_pmf(:));
- %legend(’H0 pmf', ’H1 pmf’);
-end
-%%Task 2
+%c: show results by generating a seperate figure for each patient 
+%c Executed in B
