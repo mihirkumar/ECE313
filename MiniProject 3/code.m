@@ -66,7 +66,27 @@ for k = 1:9
 			end
 		end
 
-		H0_pmf = tabulate(H0_vector);
-		H1_pmf = tabulate(H1_vector);
+		H0_pmf = transpose(tabulate(H0_vector));
+		H1_pmf = transpose(tabulate(H1_vector));
+
+		likelihoodMatrixLength = max(length(H0_pmf),length(H1_pmf));
+		likelihoodMatrix = zeros(3, likelihoodMatrixLength);
+
+		for x = 1:likelihoodMatrixLength
+			if H1_pmf
+				likelihoodMatrix(1, x) = H1_pmf(1,x);
+			else
+				likelihoodMatrix(1,x) = H0_pmf(1,x);
+			end
+		end
+
+		for x = 1:likelihoodMatrixLength
+			if H1_pmf
+				likelihoodMatrix(2,x) = H1_pmf(3,x)/100;
+			end
+			if H0_pmf
+				likelihoodMatrix(3,x) = H0_pmf(3,x)/100;
+			end
+		end
 	end
 end
