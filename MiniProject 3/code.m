@@ -44,7 +44,7 @@ for k = 1:9
       for i = 1: training_length(k)
           if(train(k).all_labels(1, i) == 1)
               train(k).goldens(j, index1) = train(k).all_data(j,i);
-              index1 = index1 + 1
+              index1 = index1 + 1;
           end
           if(train(k).all_labels(1, i) == 0)
               train(k).nongoldens(j,index0) = train(k).all_data(j,i);
@@ -64,19 +64,21 @@ for k = 1:9
     prior_H0(k) = 1 - prior_H1(k);
 end
 %b: construct likelihood matrices for each of the seven features
+
 for k = 1:9
     figure;
     for j = 1:7
-        train(k).likelyH1= tabulate(train(k).goldens(j,:));
-            train(k).likelyH1(:,3) = train(k).likelyH1(:,3) / 3;
-        train(k).likelyH0 = tabulate(train(k).nongoldens(j,:));
-            train(k).likelyH0(:,3) = train(k).likelyH0(:,3) / 3;
+        likelyH1= tabulate(train(k).goldens(j,:));
+            likelyH1(:,3) = likelyH1(:,3) / 100;
+        likelyH0 = tabulate(train(k).nongoldens(j,:));
+            likelyH0(:,3) = likelyH0(:,3) / 100;
         subplot(7, 1, j); 
-        plot(train(k).likelyH0(:,3)); 
+        plot(likelyH0(:,3)); 
         hold on; 
-        plot(train(k).likelyH1(:,3));
-        legend('H0 pmf', 'H1 pmf');
+        plot(likelyH1(:,3));
     end
+    
+    legend('H0 pmf', 'H1 pmf');
     
 end
 labels = {'MEAN AREA UNDER HEART BEAT', 'MEAN R TO R PEAK INTERVAL', 'NUMBER OF BEATS PER MINUTE', 'PEAK TO PEAK INTERVAL FOR BP','SYSTOLIC BP', 'DIASTOLIC BP', 'PULSE PRESSURE'}; 
