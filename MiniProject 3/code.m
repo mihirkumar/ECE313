@@ -32,16 +32,18 @@ for k = 1:9
 	patient_array(k).label_testing = patient_array(k).all_labels(:,splitpoint+1:full_length);
 end
 
-table = cell(9,7);
 
 %old code underneath
-all_data = floor(all_data);
 
-training = all_data(:,1:2866)
-label_training = all_labels(1:2866)
+%training = all_data(:,1:2866)
+%label_training = all_labels(1:2866)
 
-testing = all_data(:, 2867:4299)
-label_testing = all_labels(2867:4299)
+%testing = all_data(:, 2867:4299)
+%label_testing = all_labels(2867:4299)
+
+h0_array = [];
+h1_array = [];
+
 
 h0_occurrences = 0;
 h1_occurrences = 0;
