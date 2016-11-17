@@ -65,7 +65,6 @@ for k = 1:9
 end
 %b: construct likelihood matrices for each of the seven features
 
-patient_labels = {'Patient 1','Patient 2','Patient 3','Patient 4','Patient 5','Patient 6','Patient 7','Patient 8','Patient 9'};
 feature_labels = {'Mean Area under the Heart Beat','Mean R-to-R peak interval','Number of beats per minute (Heart Rate)','Peak to peak interval for Blood Pressure','Systolic Blood Pressure','Diastolic Blood Pressure','Pulse Pressure'};
 
 for k = 1:9
