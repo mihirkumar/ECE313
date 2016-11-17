@@ -71,65 +71,21 @@ feature_max_length = [17, 220, 220, 220, 115, 86, 74];
 for k = 1:9
     figure;
     for j = 1:7
-        likelyH1 = tabulate(train(k).goldens(j,:));
-            likelyH1(:,3) = likelyH1(:,3) / 100;
-        likelyH0 = tabulate(train(k).nongoldens(j,:));
-            likelyH0(:,3) = likelyH0(:,3) / 100;
+        train(k).H1{j,1} = tabulate(train(k).goldens(j,:))';
+        train(k).H1{j,1}(3,:) = train(k).H1{j,1}(3,:) / 100;
+       
+        train(k).H0{j,1} = tabulate(train(k).nongoldens(j,:))';
+        train(k).H0{j,1}(3,:) = train(k).H0{j,1}(3,:) / 100;        
+        
         subplot(7, 1, j); 
-        plot(likelyH0(:,3));
+        plot(train(k).H0{j,1}(3,:));
         
         % Add feature titles and set axis for each subplot
         title(feature_labels(j));
         axis([0 feature_max_length(j) 0 1]);
         
         hold on; 
-        plot(likelyH1(:,3));
-    %figure out quartiles and save them
-        max1 = max(likelyH1(:,1)); 
-        max2 = max(likelyH0(:,1));
-        max_val = max(max1,max2);
-        min1 = min(likelyH1(:,1)); 
-        min2 = min(likelyH0(:,1));
-        min_val = min(min1,min2);
-        train(k).middle(j) = floor((max_val - min_val)/2);
-        train(k).first_quarter(j) = floor((train(k).middle(j) - min_val)/2);
-        train(k).third_quarter(j) = floor((max_val - train(k).middle(j))/2) + train(k).middle(j);
-        train(k).max(j) = max_val;
-        train(k).H1(j,1:4) = zeros();
-        train(k).H0(j,1:4) = zeros();
-        for q = 1:size(likelyH1) 
-           if (likelyH1(q,1) < train(k).first_quarter(j))
-                percent = likelyH1(q,3);
-                p = 1;
-           elseif (likelyH1(p,1) < train(k).middle(j))
-                percent = likelyH1(q,3);
-                p = 2;
-           elseif (likelyH1(q,1) < train(k).third_quarter(j))
-                percent = likelyH1(q,3);
-                p = 3;
-           else
-                percent = likelyH1(q,3);
-                p = 4;
-           end
-           train(k).H1(j,p) = train(k).H1(j,p)+ percent;
-        end
-        
-        for q = 1:size(likelyH0) 
-           if (likelyH0(q,1) < train(k).first_quarter(j)) 
-                percent = likelyH0(q,3);
-                p = 1;
-           elseif (likelyH0(q,1) < train(k).middle(j))
-                percent = likelyH0(q,3);
-                p = 2;
-           elseif (likelyH0(q,1) < train(k).third_quarter(j))
-                percent = likelyH0(q,3);
-                p = 3;
-           else
-                percent = likelyH0(q,3);
-                p = 4;
-           end
-           train(k).H0(j,p) = train(k).H0(j,p)+ percent;
-        end
+        plot(train(k).H1{j,1}(3,:));
     end
     legend('H0 pmf', 'H1 pmf');
 end
@@ -140,13 +96,13 @@ end
 %d: Calculate ML and MAP decision rule vectors
 for k = 1:9
     for j = 1:7
-        for p = 1:4
-            if( train(k).H1(j,p) >= train(k).H0(j,p))
+        for p = length(train(k).H1{j,1}(1,:));
+            if( train(k).H1{j,1}(3,p) >= train(k).H0{j,1}(3,p))
                 train(k).ML(j,p) = 1;
             else 
                 train(k).ML(j,p) = 0;
             end
-            if((train(k).H1(j,p) * prior_H1) >= (train(k).H0(j,p)*prior_H0))
+            if((train(k).H1{j,1}(3,p) * prior_H1(j)) >= (train(k).H0{j,1}(3,p)*prior_H0(j)))
                 train(k).MAP(j,p) = 1;
             else
                 train(k).MAP(j,p) = 0;
@@ -159,12 +115,13 @@ HT_table_array = cell(9,7);
 
 for k = 1:9
     for j = 1:7
-           Max_Value(:,1) = [train(k).first_quarter(j), train(k).middle(j), train(k).third_quarter(j), train(k).max(j)];
-           H1_array(:,1) = [train(k).H1(j,1), train(k).H1(j,2), train(k).H1(j,3), train(k).H1(j,4)];
-           H0_array(:,1) = [train(k).H0(j,1), train(k).H0(j,2), train(k).H0(j,3), train(k).H0(j,4)];
-           ML_array(:,1) = [train(k).ML(j,1), train(k).ML(j,2), train(k).ML(j,3), train(k).ML(j,4)];
-           MAP_array(:,1) = [train(k).MAP(j,1), train(k).MAP(j,2), train(k).MAP(j,3), train(k).MAP(j,4)];
-           HT_table_array{k, j} = table(Max_Value, H1_array, H0_array, ML_array, MAP_array);
+        Xi = train(k).H1{j,1}(1,:);
+        H1 = train(k).H1{j,1}(3,:);
+        H0 = train(k).H0{j,1}(3,:);
+        ML = train(k).ML(j,:);
+        MAP = train(k).MAP(j,:);
+        
+        HT_table_array{k, j} = table(Xi, H1, H0, ML, MAP);
           
     end
 end
