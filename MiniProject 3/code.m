@@ -41,13 +41,13 @@ for k = 1:9
    for j = 1:7
       index1 = 1;
       index0 = 1;
-      for i = 1: training_length(k)
-          if(train(k).all_labels(1, i) == 1)
-              train(k).goldens(j, index1) = train(k).all_data(j,i);
+      for p = 1: training_length(k)
+          if(train(k).all_labels(1, p) == 1)
+              train(k).goldens(j, index1) = train(k).all_data(j,p);
               index1 = index1 + 1;
           end
-          if(train(k).all_labels(1, i) == 0)
-              train(k).nongoldens(j,index0) = train(k).all_data(j,i);
+          if(train(k).all_labels(1, p) == 0)
+              train(k).nongoldens(j,index0) = train(k).all_data(j,p);
               index0 = index0 + 1;
           end
       end
@@ -97,35 +97,35 @@ for k = 1:9
         train(k).max(j) = max_val;
         train(k).H1(j,1:4) = zeros();
         train(k).H0(j,1:4) = zeros();
-        for i = 1:size(likelyH1) 
-           if (likelyH1(i,1) < train(k).first_quarter(j))
-                percent = likelyH1(i,3);
+        for q = 1:size(likelyH1) 
+           if (likelyH1(q,1) < train(k).first_quarter(j))
+                percent = likelyH1(q,3);
                 p = 1;
-           elseif (likelyH1(i,1) < train(k).middle(j))
-                percent = likelyH1(i,3);
+           elseif (likelyH1(p,1) < train(k).middle(j))
+                percent = likelyH1(q,3);
                 p = 2;
-           elseif (likelyH1(i,1) < train(k).third_quarter(j))
-                percent = likelyH1(i,3);
+           elseif (likelyH1(q,1) < train(k).third_quarter(j))
+                percent = likelyH1(q,3);
                 p = 3;
            else
-                percent = likelyH1(i,3);
+                percent = likelyH1(q,3);
                 p = 4;
            end
            train(k).H1(j,p) = train(k).H1(j,p)+ percent;
         end
         
-        for i = 1:size(likelyH0) 
-           if (likelyH0(i,1) < train(k).first_quarter(j)) 
-                percent = likelyH0(i,3);
+        for q = 1:size(likelyH0) 
+           if (likelyH0(q,1) < train(k).first_quarter(j)) 
+                percent = likelyH0(q,3);
                 p = 1;
-           elseif (likelyH0(i,1) < train(k).middle(j))
-                percent = likelyH0(i,3);
+           elseif (likelyH0(q,1) < train(k).middle(j))
+                percent = likelyH0(q,3);
                 p = 2;
-           elseif (likelyH0(i,1) < train(k).third_quarter(j))
-                percent = likelyH0(i,3);
+           elseif (likelyH0(q,1) < train(k).third_quarter(j))
+                percent = likelyH0(q,3);
                 p = 3;
            else
-                percent = likelyH0(i,3);
+                percent = likelyH0(q,3);
                 p = 4;
            end
            train(k).H0(j,p) = train(k).H0(j,p)+ percent;
@@ -146,7 +146,7 @@ for k = 1:9
             else 
                 train(k).ML(j,p) = 0;
             end
-            if(train(k).H1(j,p) * prior_H1 >= train(k).H0(j,p)*prior_H0)
+            if((train(k).H1(j,p) * prior_H1) >= (train(k).H0(j,p)*prior_H0))
                 train(k).MAP(j,p) = 1;
             else
                 train(k).MAP(j,p) = 0;
@@ -168,75 +168,70 @@ for k = 1:9
           
     end
 end
-%Task 1.2
-
+%% Task 1.2
+%Use HT_table_array to generate alarms based on ML/MAP
 for k = 1:9
     for j = 1:7
-        for i=1:testing_length(k)
-            %ML
-            if(test(k).all_data(j,i) <= train(k).first_quarter(j))
-                test(k).ML(j,i) = train(k).ML(j,1);
-            elseif (test(k).all_data(j,i) <= train(k).middle(j))
-                test(k).ML(j,i) = train(k).ML(j,2);
-            elseif (test(k).all_data(j,i) <= train(k).third_quarter(j))
-                test(k).ML(j,i) = train(k).ML(j,3);
-            else
-                test(k).ML(j,i) = train(k).ML(j,4);
+        for p = 1:testing_length(k)
+            %default to maximum
+            test(k).ML(j,p) = HT_table_array{k,j}.ML_array(4);
+            test(k).MAP(j,p) = HT_table_array{k,j}.MAP_array(4);
+            for q = 1:4
+                %if the data fall within the range given, assign the ML/MAP
+                %value
+                if(test(k).all_data(j,p) <= HT_table_array{k,j}.Max_Value(5-q))
+                    test(k).ML(j,p) = HT_table_array{k,j}.ML_array(5-q);
+                    test(k).MAP(j,p) = HT_table_array{k,j}.MAP_array(5-q);
+                end
             end
-            %MAP
-            if(test(k).all_data(j,i) <= train(k).first_quarter(j))
-                test(k).MAP(j,i) = train(k).MAP(j,1);
-            elseif (test(k).all_data(j,i) <= train(k).middle(j))
-                test(k).MAP(j,i) = train(k).MAP(j,2);
-            elseif (test(k).all_data(j,i) <= train(k).third_quarter(j))
-                test(k).MAP(j,i) = train(k).MAP(j,3);
-            else
-                test(k).MAP(j,i) = train(k).MAP(j,4);
-            end
-        end
-    end
-end
-missed_detect_MAP = 0;
-false_alarm_MAP = 0;
-error_MAP = 0;
+        end %testing_length    
+    end %7
+end %9 
 
-missed_detect_ML = 0;
-false_alarm_ML = 0;
-error_ML = 0;
-
+%b: evaluate ML/MAP rules
 for k = 1:9 
     for j = 1:7
+      missed_detect_MAP = 0;
+      false_alarm_MAP = 0;
+      error_MAP = 0;
+
+      missed_detect_ML = 0;
+      false_alarm_ML = 0;
+      error_ML = 0;
       for i = 1:testing_length(k)
           %MAP
           if(test(k).MAP(j,i) == 0 & test(k).all_labels(i) == 1)
               missed_detect_MAP = missed_detect_MAP +1;
-          elseif (test(k).MAP(j,i) == 1 & test(k).all_labels == 1)
+          end
+          if (test(k).MAP(j,i) == 1 & test(k).all_labels == 0)
               false_alarm_MAP = false_alarm_MAP +1;
-          elseif((test(k).MAP(j,i) & test(k).all_labels == 1) | (test(k).MAP(j,i) == 0 & test(k).all_labels == 1))
-               error_MAP = error_MAP +1;
-          else
+          end
+          if((test(k).MAP(j,i) == 0 & test(k).all_labels == 1) | (test(k).MAP(j,i) == 1 & test(k).all_labels == 0))
+              error_MAP = error_MAP +1;
           end
           %ML
           if(test(k).ML(j,i) == 0 & test(k).all_labels(i) == 1)
               missed_detect_ML = missed_detect_ML +1;
-          elseif (test(k).ML(j,i) == 1 & test(k).all_labels == 1)
+          end
+          if (test(k).ML(j,i) == 1 & test(k).all_labels == 0)
               false_alarm_ML = false_alarm_ML +1;
-          elseif((test(k).ML(j,i) & test(k).all_labels == 1) | (test(k).ML(j,i) == 0 & test(k).all_labels == 1))
+          end
+          if((test(k).ML(j,i) == 0 & test(k).all_labels == 1) | (test(k).ML(j,i) == 1 & test(k).all_labels == 0))
                error_ML = error_ML +1;
-          else
           end
       end
+      num_nongoldens = testing_length(j) - sum(test(k).all_labels);
+      num_goldens = sum(test(k).all_labels);
+      num_totals = length(test(k).all_labels);
+   
+      test(k).MAP_MD(j) = missed_detect_MAP / num_goldens;
+      test(k).ML_MD(j) = missed_detect_ML / num_goldens;
+      test(k).MAP_FA(j) = false_alarm_MAP / num_nongoldens;
+      test(k).ML_FA(j) = false_alarm_ML / num_nongoldens;
+      test(k).MAP_E(j) = error_MAP / num_totals;
+      test(k).ML_E(j) = error_ML / num_totals;
     end
-    num_nongoldens = testing_length(j) - sum(test(k).all_labels);
-    num_goldens = sum(test(k).all_labels);
-    num_totals = length(test(k).all_labels);
     
-    test(k).MAP_MD(j) = missed_detect_MAP / num_nongoldens;
-    test(k).ML_MD(j) = missed_detect_ML / num_goldens;
-    test(k).MAP_FA(j) = false_alarm_MAP / num_nongoldens;
-    test(k).ML_FA(j) = false_alarm_ML / num_goldens;
-    test(k).MAP_E(j) = error_MAP / num_totals;
-    test(k).ML_E(j) = error_ML / num_totals;
 end
 
 
