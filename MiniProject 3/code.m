@@ -80,7 +80,7 @@ for k = 1:9
         
         % Add feature titles and set axis for each subplot
         title(feature_labels(j));
-        axis([0 feature_max_length(k) 0 1]);
+        axis([0 feature_max_length(j) 0 1]);
         
         hold on; 
         plot(likelyH1(:,3));
