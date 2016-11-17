@@ -3,15 +3,15 @@ clear all;
 
 %%Task 0
 %Load in data sets and make it readable.
-dat1_const = load('patient_data/1_a41178.mat');
-dat2_const = load('patient_data/2_a42126.mat');
-dat3_const = load('patient_data/3_a40076.mat');
-dat4_const = load('patient_data/4_a40050.mat');
-dat5_const = load('patient_data/5_a41287.mat');
-dat6_const = load('patient_data/6_a41846.mat');
-dat7_const = load('patient_data/7_a41846.mat');
-dat8_const = load('patient_data/8_a42008.mat');
-dat9_const = load('patient_data/9_a41846.mat');
+dat1_const = load('1_a41178.mat');
+dat2_const  = load('2_a42126.mat');
+dat3_const = load('3_a40076.mat');
+dat4_const = load('4_a40050.mat');
+dat5_const = load('5_a41287.mat');
+dat6_const = load('6_a41846.mat');
+dat7_const = load('7_a41846.mat');
+dat8_const = load('8_a42008.mat');
+dat9_const = load('9_a41846.mat');
 
 %put in array for simplification of data management
 dat_array = [dat1_const, dat2_const, dat3_const, dat4_const, dat5_const, dat6_const, dat7_const, dat8_const, dat9_const];
@@ -60,12 +60,10 @@ fid = fopen('ECE313_Final_group5', 'w');
 %%Task 1
 %a: Calculate prior probabilities of P(H1) an dP(H0)
 for k = 1:9
-    prior_H1(k) = sum(train(k).all_labels)/training_length(k);
+    prior_H1(k) = sum(train(1).all_labels)/training_length(1);
     prior_H0(k) = 1 - prior_H1(k);
 end
 %b: construct likelihood matrices for each of the seven features
-
-feature_labels = {'Mean Area under the Heart Beat','Mean R-to-R peak interval','Number of beats per minute (Heart Rate)','Peak to peak interval for Blood Pressure','Systolic Blood Pressure','Diastolic Blood Pressure','Pulse Pressure'};
 
 for k = 1:9
     figure;
@@ -75,12 +73,7 @@ for k = 1:9
         likelyH0 = tabulate(train(k).nongoldens(j,:));
             likelyH0(:,3) = likelyH0(:,3) / 100;
         subplot(7, 1, j); 
-        plot(likelyH0(:,3));
-        
-        % Add feature titles and set axis for each subplot
-        title(feature_labels(j));
-        axis([0 250 0 1]);
-        
+        plot(likelyH0(:,3)); 
         hold on; 
         plot(likelyH1(:,3));
     %figure out quartiles and save them
@@ -130,7 +123,9 @@ for k = 1:9
            train(k).H0(j,p) = train(k).H0(j,p)+ percent;
         end
     end
+    
     legend('H0 pmf', 'H1 pmf');
+    
 end
 
 %c: show results by generating a seperate figure for each patient 
@@ -169,5 +164,85 @@ for k = 1:9
 end
 %Task 1.2
 
+for k = 1:9
+    for j = 1:7
+        for i=1:testing_length(k)
+            %ML
+            if(test(k).all_data(j,i) <= train(k).first_quarter(j))
+                test(k).ML(j,i) = train(k).ML(j,1);
+            elseif (test(k).all_data(j,i) <= train(k).middle(j))
+                test(k).ML(j,i) = train(k).ML(j,2);
+            elseif (test(k).all_data(j,i) <= train(k).third_quarter(j))
+                test(k).ML(j,i) = train(k).ML(j,3);
+            else
+                test(k).ML(j,i) = train(k).ML(j,4);
+            end
+            %MAP
+            if(test(k).all_data(j,i) <= train(k).first_quarter(j))
+                test(k).MAP(j,i) = train(k).MAP(j,1);
+            elseif (test(k).all_data(j,i) <= train(k).middle(j))
+                test(k).MAP(j,i) = train(k).MAP(j,2);
+            elseif (test(k).all_data(j,i) <= train(k).third_quarter(j))
+                test(k).MAP(j,i) = train(k).MAP(j,3);
+            else
+                test(k).MAP(j,i) = train(k).MAP(j,4);
+            end
+        end
+    end
+end
+missed_detect_MAP = 0;
+false_alarm_MAP = 0;
+error_MAP = 0;
 
-     
+missed_detect_ML = 0;
+false_alarm_ML = 0;
+error_ML = 0;
+
+for k = 1:9 
+    for j = 1:7
+      for i = 1:testing_length(k)
+          %MAP
+          if(test(k).MAP(j,i) == 0 & test(k).all_labels(i) == 1)
+              missed_detect_MAP = missed_detect_MAP +1;
+          elseif (test(k).MAP(j,i) == 1 & test(k).all_labels == 1)
+              false_alarm_MAP = false_alarm_MAP +1;
+          elseif((test(k).MAP(j,i) & test(k).all_labels == 1) | (test(k).MAP(j,i) == 0 & test(k).all_labels == 1))
+               error_MAP = error_MAP +1;
+          else
+          end
+          %ML
+          if(test(k).ML(j,i) == 0 & test(k).all_labels(i) == 1)
+              missed_detect_ML = missed_detect_ML +1;
+          elseif (test(k).ML(j,i) == 1 & test(k).all_labels == 1)
+              false_alarm_ML = false_alarm_ML +1;
+          elseif((test(k).ML(j,i) & test(k).all_labels == 1) | (test(k).ML(j,i) == 0 & test(k).all_labels == 1))
+               error_ML = error_ML +1;
+          else
+          end
+      end
+    end
+    num_nongoldens = testing_length(j) - sum(test(k).all_labels);
+    num_goldens = sum(test(k).all_labels);
+    num_totals = length(test(k).all_labels);
+    
+    test(k).MAP_MD(j) = missed_detect_MAP / num_nongoldens;
+    test(k).ML_MD(j) = missed_detect_ML / num_goldens;
+    test(k).MAP_FA(j) = false_alarm_MAP / num_nongoldens;
+    test(k).ML_FA(j) = false_alarm_ML / num_goldens;
+    test(k).MAP_E(j) = error_MAP / num_totals;
+    test(k).ML_E(j) = error_ML / num_totals;
+end
+
+
+Error_table_array = cell(9,7);
+
+for k = 1:9
+    for j = 1:7
+           falseAlarm(:,1) = [test(k).ML_FA(j), test(k).MAP_FA(j)];
+           missDetect(:,1) = [test(k).ML_MD(j), test(k).MAP_MD(j)];
+           error(:,1) = [test(k).ML_E(j), test(k).MAP_E(j)];
+           Error_table_array{k, j} = table(falseAlarm, missDetect, error);
+          
+    end
+end
+                
