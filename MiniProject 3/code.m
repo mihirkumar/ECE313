@@ -68,7 +68,7 @@ end
 for k = 1:9
     figure;
     for j = 1:7
-        likelyH1= tabulate(train(k).goldens(j,:));
+        likelyH1 = tabulate(train(k).goldens(j,:));
             likelyH1(:,3) = likelyH1(:,3) / 100;
         likelyH0 = tabulate(train(k).nongoldens(j,:));
             likelyH0(:,3) = likelyH0(:,3) / 100;
@@ -83,20 +83,20 @@ for k = 1:9
         min1 = min(likelyH1(:,1)); 
         min2 = min(likelyH0(:,1));
         min_val = min(min1,min2);
-        train(k).middle = floor((max_val - min_val)/2);
-        train(k).first_quarter = floor((train(k).middle - min_val)/2);
-        train(k).third_quarter = floor((max_val - train(k).middle)/2) + train(k).middle;
+        train(k).middle(j) = floor((max_val - min_val)/2);
+        train(k).first_quarter(j) = floor((train(k).middle(j) - min_val)/2);
+        train(k).third_quarter(j) = floor((max_val - train(k).middle(j))/2) + train(k).middle(j);
         train(k).max = max_val;
         train(k).H1(j,1:4) = zeros();
         train(k).H0(j,1:4) = zeros();
         for i = 1:size(likelyH1) 
-           if (likelyH1(i,1) < train(k).first_quarter)
+           if (likelyH1(i,1) < train(k).first_quarter(j))
                 percent = likelyH1(i,3);
                 p = 1;
-           elseif (likelyH1(i,1) < train(k).middle)
+           elseif (likelyH1(i,1) < train(k).middle(j))
                 percent = likelyH1(i,3);
                 p = 2;
-           elseif (likelyH1(i,1) < train(k).third_quarter)
+           elseif (likelyH1(i,1) < train(k).third_quarter(j))
                 percent = likelyH1(i,3);
                 p = 3;
            else
@@ -107,13 +107,13 @@ for k = 1:9
         end
         
         for i = 1:size(likelyH0) 
-           if (likelyH0(i,1) < train(k).first_quarter) 
+           if (likelyH0(i,1) < train(k).first_quarter(j)) 
                 percent = likelyH0(i,3);
                 p = 1;
-           elseif (likelyH0(i,1) < train(k).middle)
+           elseif (likelyH0(i,1) < train(k).middle(j))
                 percent = likelyH0(i,3);
                 p = 2;
-           elseif (likelyH0(i,1) < train(k).third_quarter)
+           elseif (likelyH0(i,1) < train(k).third_quarter(j))
                 percent = likelyH0(i,3);
                 p = 3;
            else
@@ -149,18 +149,31 @@ for k = 1:9
     end
 end
 %e: save the results in a 9 by 7 cell array called HT_table_array
-%we'll figure this out later today before the report is due but it is
-%cosmetic so I'm moving on
 HT_table_array = cell(9,7);
 for k = 1:9
     for j = 1:7
-        HT_table_array(k, j) = mat2cell(HT_table(j));
-           HT_table(j) = [train(k).first_quarter, train(k).H1(j,1), train(k).H0(j,1), train(k).ML(j,1), train(k).MAP(j, 1);
-                          train(k).middle, train(k).H1(j,2), train(k).H0(j,2), train(k).ML(j,2), train(k).MAP(j, 2);
-                          train(k).third_quarter, train(k).H1(j,3), train(k).H0(j,3), train(k).ML(j,3), train(k).MAP(j, 3);
-                          train(k).max, train(k).H1(j,4), train(k).H0(j,4), train(k).ML(j,4), train(k).MAP(j,4)];
+           HT_table_array{k, j} = [train(k).first_quarter, train(k).H1(j,1), train(k).H0(j,1), train(k).ML(j,1), train(k).MAP(j, 1);
+           train(k).middle, train(k).H1(j,2), train(k).H0(j,2), train(k).ML(j,2), train(k).MAP(j, 2);
+           train(k).third_quarter, train(k).H1(j,3), train(k).H0(j,3), train(k).ML(j,3), train(k).MAP(j, 3);
+           train(k).max, train(k).H1(j,4), train(k).H0(j,4), train(k).ML(j,4), train(k).MAP(j,4)];
     end
 end
 %Task 1.2
+for k = 1:9
+    for j = 1:7
+        for i=1:test_length(j)
+            if(test(k).all_data(1,i) <= train(k).first_quarter(j))
+                test(k).ML(j,1) = train(k).ML(j,1);
+            elseif (test(k).all_data(2,i) <= train(k).middle(j))
+                test(k).ML(j,2) = train(k).ML(j,2);
+            elseif (test(k).all_data(3,i) <= train(k).third_quarter(j))
+                test(k).ML(j,3) = train(k).ML(j,3);
+            else 
+                test(k).ML(j,4) = train(k).ML(j,4);
+            end
+        end
+    end
+end
 
-                
+     
+        
