@@ -65,6 +65,9 @@ for k = 1:9
 end
 %b: construct likelihood matrices for each of the seven features
 
+patient_labels = {'Patient 1','Patient 2','Patient 3','Patient 4','Patient 5','Patient 6','Patient 7','Patient 8','Patient 9'};
+feature_labels = {'Mean Area under the Heart Beat','Mean R-to-R peak interval','Number of beats per minute (Heart Rate)','Peak to peak interval for Blood Pressure','Systolic Blood Pressure','Diastolic Blood Pressure','Pulse Pressure'};
+
 for k = 1:9
     figure;
     for j = 1:7
@@ -73,7 +76,8 @@ for k = 1:9
         likelyH0 = tabulate(train(k).nongoldens(j,:));
             likelyH0(:,3) = likelyH0(:,3) / 100;
         subplot(7, 1, j); 
-        plot(likelyH0(:,3)); 
+        plot(likelyH0(:,3));
+        title(feature_labels(j));
         hold on; 
         plot(likelyH1(:,3));
     %figure out quartiles and save them
@@ -123,9 +127,7 @@ for k = 1:9
            train(k).H0(j,p) = train(k).H0(j,p)+ percent;
         end
     end
-    
     legend('H0 pmf', 'H1 pmf');
-    
 end
 
 %c: show results by generating a seperate figure for each patient 
@@ -153,8 +155,6 @@ HT_table_array = cell(9,7);
 
 for k = 1:9
     for j = 1:7
-        k
-        j
            Max_Value(:,1) = [train(k).first_quarter(j), train(k).middle(j), train(k).third_quarter(j), train(k).max(j)];
            H1_array(:,1) = [train(k).H1(j,1), train(k).H1(j,2), train(k).H1(j,3), train(k).H1(j,4)];
            H0_array(:,1) = [train(k).H0(j,1), train(k).H0(j,2), train(k).H0(j,3), train(k).H0(j,4)];
