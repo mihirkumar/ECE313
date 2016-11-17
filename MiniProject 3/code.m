@@ -3,15 +3,15 @@ clear all;
 
 %%Task 0
 %Load in data sets and make it readable.
-dat1_const = load('1_a41178.mat');
-dat2_const  = load('2_a42126.mat');
-dat3_const = load('3_a40076.mat');
-dat4_const = load('4_a40050.mat');
-dat5_const = load('5_a41287.mat');
-dat6_const = load('6_a41846.mat');
-dat7_const = load('7_a41846.mat');
-dat8_const = load('8_a42008.mat');
-dat9_const = load('9_a41846.mat');
+dat1_const = load('patient_data/1_a41178.mat');
+dat2_const = load('patient_data/2_a42126.mat');
+dat3_const = load('patient_data/3_a40076.mat');
+dat4_const = load('patient_data/4_a40050.mat');
+dat5_const = load('patient_data/5_a41287.mat');
+dat6_const = load('patient_data/6_a41846.mat');
+dat7_const = load('patient_data/7_a41846.mat');
+dat8_const = load('patient_data/8_a42008.mat');
+dat9_const = load('patient_data/9_a41846.mat');
 
 %put in array for simplification of data management
 dat_array = [dat1_const, dat2_const, dat3_const, dat4_const, dat5_const, dat6_const, dat7_const, dat8_const, dat9_const];
