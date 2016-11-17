@@ -60,7 +60,7 @@ fid = fopen('ECE313_Final_group5', 'w');
 %%Task 1
 %a: Calculate prior probabilities of P(H1) an dP(H0)
 for k = 1:9
-    prior_H1(k) = sum(train(1).all_labels)/training_length(1);
+    prior_H1(k) = sum(train(k).all_labels)/training_length(k);
     prior_H0(k) = 1 - prior_H1(k);
 end
 %b: construct likelihood matrices for each of the seven features
@@ -76,7 +76,11 @@ for k = 1:9
             likelyH0(:,3) = likelyH0(:,3) / 100;
         subplot(7, 1, j); 
         plot(likelyH0(:,3));
+        
+        % Add feature titles and set axis for each subplot
         title(feature_labels(j));
+        axis([0 250 0 1]);
+        
         hold on; 
         plot(likelyH1(:,3));
     %figure out quartiles and save them
