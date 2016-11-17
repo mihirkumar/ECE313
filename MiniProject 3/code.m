@@ -131,16 +131,44 @@ for k = 1:9
     for j = 1:7
         for p = 1:testing_length(k)
             %default to maximum
-            test(k).ML(j,p) = HT_table_array{k,j}.ML_array(4);
-            test(k).MAP(j,p) = HT_table_array{k,j}.MAP_array(4);
-            for q = 1:4
-                %if the data fall within the range given, assign the ML/MAP
-                %value
-                if(test(k).all_data(j,p) <= HT_table_array{k,j}.Max_Value(5-q))
-                    test(k).ML(j,p) = HT_table_array{k,j}.ML_array(5-q);
-                    test(k).MAP(j,p) = HT_table_array{k,j}.MAP_array(5-q);
+            test(k).ML(j,p) = HT_table_array{k,j}.ML(4);
+            test(k).MAP(j,p) = HT_table_array{k,j}.MAP(4);
+            %for q = 1:4 MK 2:23 pm
+            value = floor(test(k).all_data(j,p));
+            [~, idx] = find(HT_table_array{k,j}.Xi == value);
+            if isnan(idx) == 0
+                h0_val = HT_table_array{k,j}.H0(idx);
+                h1_val = HT_table_array{k,j}.H1(idx);
+                h0_val_with_prior = h0_val*prior_H0(k);
+                h1_val_with_prior = h1_val*prior_H1(k);
+                
+                if h0_val > h1_val
+                    test(k).ML(j,p) = 0;
+                else
+                    test(k).ML(j,p) = 1;
                 end
+                
+                if h0_val_with_prior > h1_val_with_prior
+                    test(k).MAP(j,p) = h0_val_with_prior;
+                else
+                    test(k).MAP(j,p) = h1_val_with_prior;
+                end
+            else
+                test(k).ML(j,p) = 1;
+                test(k).MAP(j,p) = 1;
             end
+            
+%             for q = 1:length(HT_table_array{k,j}.Xi)
+%                 %if the data fall within the range given, assign the ML/MAP
+%                 %value
+%                 %if(test(k).all_data(j,p) <= HT_table_array{k,j}.Max_Value(5-q))
+%                     if value == HT_table_array{k,j}.Xi(q);
+%                         test(k).ML(j,p) = HT_table_array{k,j}.ML(j,k);
+%                     end
+%                     %test(k).ML(j,p) = HT_table_array{k,j}.ML(5-q);
+%                     test(k).MAP(j,p) = HT_table_array{k,j}.MAP(5-q);
+%                 end
+%             end
         end %testing_length    
     end %7
 end %9 
@@ -188,7 +216,6 @@ for k = 1:9
       test(k).MAP_E(j) = error_MAP / num_totals;
       test(k).ML_E(j) = error_ML / num_totals;
     end
-    
 end
 
 
