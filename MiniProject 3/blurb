@@ -1,0 +1,24 @@
+%b: construct likelihood matrices for each of the seven features
+
+feature_labels = {'Mean Area under the Heart Beat','Mean R-to-R peak interval','Number of beats per minute (Heart Rate)','Peak to peak interval for Blood Pressure','Systolic Blood Pressure','Diastolic Blood Pressure','Pulse Pressure'};
+feature_max_length = [17, 220, 220, 220, 115, 86, 74];
+
+for k = 1:9
+    figure;
+    for j = 1:7
+        train(k).H1(j) = tabulate(train(k).goldens(j,:))';
+            likelyH1(:,3) = likelyH1(:,3) / 100;
+        likelyH0 = tabulate(train(k).nongoldens(j,:))';
+            likelyH0(:,3) = likelyH0(:,3) / 100;
+        subplot(7, 1, j); 
+        plot(likelyH0(:,3));
+        
+        % Add feature titles and set axis for each subplot
+        title(feature_labels(j));
+        axis([0 feature_max_length(j) 0 1]);
+        hold on; 
+        plot(likelyH1(:,3));
+   
+    end
+    legend('H0 pmf', 'H1 pmf');
+end
