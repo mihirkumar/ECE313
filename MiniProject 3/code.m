@@ -137,7 +137,7 @@ for k = 1:9
             test(k).ML(j,p) = HT_table_array{k,j}.ML_Array(4);
             test(k).MAP(j,p) = HT_table_array{k,j}.MAP_Array(4);
             for q = 1:length(HT_table_array{k,j}.Xi)
-                value = floor(test(k).all_data(j,p)); Office hour code for building ML MAP arrays
+                value = floor(test(k).all_data(j,p)); %Office hour code for building ML MAP arrays
                 [~, idx] = find(HT_table_array{k,j}.Xi == value);
                 if isnan(idx) == 0
                     h0_val = HT_table_array{k,j}.H0(idx);
