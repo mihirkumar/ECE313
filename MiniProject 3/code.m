@@ -73,7 +73,7 @@ for k = 1:9
     for j = 1:7
         train(k).H1{j,1} = tabulate(train(k).goldens(j,:))';
         train(k).H1{j,1}(3,:) = train(k).H1{j,1}(3,:) / 100;
-       
+        
         train(k).H0{j,1} = tabulate(train(k).nongoldens(j,:))';
         train(k).H0{j,1}(3,:) = train(k).H0{j,1}(3,:) / 100;        
         
@@ -96,7 +96,9 @@ end
 %d: Calculate ML and MAP decision rule vectors
 for k = 1:9
     for j = 1:7
-        for p = length(train(k).H1{j,1}(1,:));
+       % for p = length(train(k).H1{j,1}(1,:)); MK 3:34pm no need of the
+       % loop
+            p = length(train(k).H1{j,1}(1,:));
             if( train(k).H1{j,1}(3,p) >= train(k).H0{j,1}(3,p))
                 train(k).ML(j,p) = 1;
             else 
@@ -107,15 +109,13 @@ for k = 1:9
             else
                 train(k).MAP(j,p) = 0;
             end
-        end
+        %end
     end
 end
-%e: save the results in a 9 by 7 cell array called HT_table_array
-HT_table_array = cell(9,7);
 
 for k = 1:9
     for j = 1:7
-        Xi = train(k).H1{j,1}(1,:);
+        Xi = union(train(k).H1{j,1}(1,:), train(k).H0{j,1}(1,:)); %Xi the same size as max(H1,H0)
         H1 = train(k).H1{j,1}(3,:);
         H0 = train(k).H0{j,1}(3,:);
         ML = train(k).ML(j,:);
@@ -125,50 +125,52 @@ for k = 1:9
           
     end
 end
+
+%e: save the results in a 9 by 7 cell array called HT_table_array
+HT_table_array = cell(9,7);
+
 %% Task 1.2
 %Use HT_table_array to generate alarms based on ML/MAP
 for k = 1:9
     for j = 1:7
         for p = 1:testing_length(k)
-            %default to maximum
-            test(k).ML(j,p) = HT_table_array{k,j}.ML(4);
-            test(k).MAP(j,p) = HT_table_array{k,j}.MAP(4);
-            %for q = 1:4 MK 2:23 pm
-            value = floor(test(k).all_data(j,p));
-            [~, idx] = find(HT_table_array{k,j}.Xi == value);
-            if isnan(idx) == 0
-                h0_val = HT_table_array{k,j}.H0(idx);
-                h1_val = HT_table_array{k,j}.H1(idx);
-                h0_val_with_prior = h0_val*prior_H0(k);
-                h1_val_with_prior = h1_val*prior_H1(k);
+            test(k).ML(j,p) = HT_table_array{k,j}.ML_Array(4);
+            test(k).MAP(j,p) = HT_table_array{k,j}.MAP_Array(4);
+            for q = 1:length(HT_table_array{k,j}.Xi)
+                value = floor(test(k).all_data(j,p)); Office hour code for building ML MAP arrays
+                [~, idx] = find(HT_table_array{k,j}.Xi == value);
+                if isnan(idx) == 0
+                    h0_val = HT_table_array{k,j}.H0(idx);
+                    h1_val = HT_table_array{k,j}.H1(idx);
+                    h0_val_with_prior = h0_val*prior_H0(k);
+                    h1_val_with_prior = h1_val*prior_H1(k);
+                    if h0_val > h1_val
+                        test(k).ML(j,p) = 0;
+                    else
+                        test(k).ML(j,p) = 1;
+                    end
                 
-                if h0_val > h1_val
-                    test(k).ML(j,p) = 0;
+                    if h0_val_with_prior > h1_val_with_prior
+                        test(k).MAP(j,p) = h0_val_with_prior;
+                    else
+                        test(k).MAP(j,p) = h1_val_with_prior;
+                    end
+                
                 else
                     test(k).ML(j,p) = 1;
+                    test(k).MAP(j,p) = 1;
                 end
-                
-                if h0_val_with_prior > h1_val_with_prior
-                    test(k).MAP(j,p) = h0_val_with_prior;
-                else
-                    test(k).MAP(j,p) = h1_val_with_prior;
-                end
-            else
-                test(k).ML(j,p) = 1;
-                test(k).MAP(j,p) = 1;
-            end
-            
-%             for q = 1:length(HT_table_array{k,j}.Xi)
+        end
+%           for q = 1:4 MK 2:23 p      
 %                 %if the data fall within the range given, assign the ML/MAP
 %                 %value
 %                 %if(test(k).all_data(j,p) <= HT_table_array{k,j}.Max_Value(5-q))
 %                     if value == HT_table_array{k,j}.Xi(q);
 %                         test(k).ML(j,p) = HT_table_array{k,j}.ML(j,k);
-%                     end
-%                     %test(k).ML(j,p) = HT_table_array{k,j}.ML(5-q);
-%                     test(k).MAP(j,p) = HT_table_array{k,j}.MAP(5-q);
 %                 end
-%             end
+%                 test(k).ML(j,p) = HT_table_array{k,j}.ML(5-q);
+%                 test(k).MAP(j,p) = HT_table_array{k,j}.MAP(5-q);
+%            end
         end %testing_length    
     end %7
 end %9 
