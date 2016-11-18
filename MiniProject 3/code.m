@@ -97,17 +97,36 @@ for k = 1:9
         %make H1, H0 same length
         delta = length(train(k).H1{j,1}(3,:)) - length(train(k).H0{j,1}(3,:));
         if(delta < 0)
+            old_start = length(train(k).H1{j,1}(3,:));
+            last_val = train(k).H1{j,1}(1,old_start);
+            first_val = train(k).H1{j,1}(1,1);
             if(train(k).H1{j,1}(1,1) < train(k).H0{j,1}(1,1))
                 train(k).H1{j,1} = horzcat(train(k).H1{j,1}(:,:), zeros(3,abs(delta)));
+                q = 0;
+                for p = old_start:(old_start + abs(delta))
+                    q = q+1;
+                    train(k).H1{j,1}(1,p) = last_val + q;
+                end
             else
                 train(k).H1{j,1} = horzcat(zeros(3,abs(delta)), train(k).H1{j,1}(:,:));
+                for p = 1:abs(delta)
+                    train(k).H1{j,1}(1,p) = first_val - abs(delta) + p - 1;
+                end
             end
         end
         if (delta > 0)
             if(train(k).H0{j,1}(1,1) < train(k).H1{j,1}(1,1))
                 train(k).H0{j,1} = horzcat(train(k).H0{j,1}(:,:), zeros(3,abs(delta)));
+                q = 0;
+                for p = old_start:(old_start + abs(delta))
+                    q = q+1;
+                    train(k).H1{j,1}(1,p) = last_val + q;
+                end
             else
                 train(k).H0{j,1} = horzcat(zeros(3,abs(delta)),train(k).H0{j,1}(:,:));
+                for p = 1:abs(delta)
+                    train(k).H1{j,1}(1,p) = first_val - abs(delta) + p - 1;
+                end
             end
         end
     end
