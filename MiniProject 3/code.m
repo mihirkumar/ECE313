@@ -92,29 +92,52 @@ end
 
 %c: show results by generating a seperate figure for each patient 
 %c Executed in B
-
+for k = 1:9
+    for j = 1:7
+        %make H1, H0 same length
+        delta = length(train(k).H1{j,1}(3,:)) - length(train(k).H0{j,1}(3,:));
+        if(delta < 0)
+            if(train(k).H1{j,1}(1,1) < train(k).H0{j,1}(1,1))
+                train(k).H1{j,1} = horzcat(train(k).H1{j,1}(:,:), zeros(3,abs(delta)));
+            else
+                train(k).H1{j,1} = horzcat(zeros(3,abs(delta)), train(k).H1{j,1}(:,:));
+            end
+        end
+        if (delta > 0)
+            if(train(k).H0{j,1}(1,1) < train(k).H1{j,1}(1,1))
+                train(k).H0{j,1} = horzcat(train(k).H0{j,1}(:,:), zeros(3,abs(delta)));
+            else
+                train(k).H0{j,1} = horzcat(zeros(3,abs(delta)),train(k).H0{j,1}(:,:));
+            end
+        end
+    end
+end
 %d: Calculate ML and MAP decision rule vectors
 for k = 1:9
     for j = 1:7
-       % for p = length(train(k).H1{j,1}(1,:)); MK 3:34pm no need of the
+        for p = 1 : length(train(k).H1{j,1}); %MK 3:34pm no need of the
        % loop
-            p = length(train(k).H1{j,1}(1,:));
-            if( train(k).H1{j,1}(3,p) >= train(k).H0{j,1}(3,p))
-                train(k).ML(j,p) = 1;
-            else 
-                train(k).ML(j,p) = 0;
+            for q = 1:7
+                %p = length(train(k).H1{j,1}(1,:));
+                if( train(k).H1{j,1}(3,p) >= train(k).H0{j,1}(3,p))
+                    train(k).ML{j,1}(q,p) = 1;
+                else 
+                    train(k).ML{j,1}(q,p) = 0;
+                end
+                if((train(k).H1{j,1}(3,p) * prior_H1(j)) >= (train(k).H0{j,1}(3,p)*prior_H0(j)))
+                    train(k).MAP{j,1}(q,p) = 1;
+                else
+                    train(k).MAP{j,1}(q,p) = 0;
+                end
             end
-            if((train(k).H1{j,1}(3,p) * prior_H1(j)) >= (train(k).H0{j,1}(3,p)*prior_H0(j)))
-                train(k).MAP(j,p) = 1;
-            else
-                train(k).MAP(j,p) = 0;
-            end
-        %end
+        end
     end
 end
 
 for k = 1:9
     for j = 1:7
+       
+        %declare arrays for tabulation
         Xi = union(train(k).H1{j,1}(1,:), train(k).H0{j,1}(1,:)); %Xi the same size as max(H1,H0)
         H1 = train(k).H1{j,1}(3,:);
         H0 = train(k).H0{j,1}(3,:);
@@ -134,10 +157,10 @@ HT_table_array = cell(9,7);
 for k = 1:9
     for j = 1:7
         for p = 1:testing_length(k)
-            test(k).ML(j,p) = HT_table_array{k,j}.ML_Array(4);
-            test(k).MAP(j,p) = HT_table_array{k,j}.MAP_Array(4);
+            test(k).ML(j,p) = HT_table_array{k,j}.ML(4);
+            test(k).MAP(j,p) = HT_table_array{k,j}.MAP(4);
             for q = 1:length(HT_table_array{k,j}.Xi)
-                value = floor(test(k).all_data(j,p)); %Office hour code for building ML MAP arrays
+                value = floor(test(k).all_data(j,p)); Office hour code for building ML MAP arrays
                 [~, idx] = find(HT_table_array{k,j}.Xi == value);
                 if isnan(idx) == 0
                     h0_val = HT_table_array{k,j}.H0(idx);
