@@ -271,10 +271,6 @@ end
 
 
 
-% Using Patients: 6, 8, 9
-% Using Features: 3, 5 (Heart Rate and Systolic BP)
-
-
 
 %% Task 3.1
 %3.1a - Generate likelihood matrices from feature pairs
