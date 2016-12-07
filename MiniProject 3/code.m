@@ -268,3 +268,60 @@ for k = 1:9
         end
     end
 end
+
+
+
+% Using Patients: 6, 8, 9
+% Using Features: 3, 5 (Heart Rate and Systolic BP)
+
+
+
+%% Task 3.1
+%3.1a - Generate likelihood matrices from feature pairs
+%Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
+patient_itt = [1,3,4]; % use this to itterate over all 3 patients
+feature_itt = [[2,7],[2,7],[1,4]];
+for p = 1:3
+    pos = 0;
+    for k = 1:length(HT_table_array{patient_itt(p),feature_itt(p,1)}) % Iterate over all of the first feature
+        for j = 1:length(HT_table_array{patient_itt(p),feature_itt(p,2)}) % Iterate over all of the second feature
+            pos = pos + 1;
+            Joint_HT_table{p}(pos,1) = k;
+            Joint_HT_table{p}(pos,2) = j;
+            % Calculate P(X=k,Y=j | H1)
+            Joint_HT_table{p}(pos,3) = HT_table_array{patient_itt(p),feature_itt(p,1)}(k,2) * HT_table_array{patient_itt(p),feature_itt(p,2)}(j,2);
+            % Calculate P(X=k,Y=j | H0)
+            Joint_HT_table{p}(pos,4) = HT_table_array{patient_itt(p),feature_itt(p,1)}(k,3) * HT_table_array{patient_itt(p),feature_itt(p,2)}(j,3);
+
+
+            %3.1b - Generate MAP and ML decision rule vectors
+            % MAP first
+            if(Joint_HT_table{p}(pos,3) >= Joint_HT_table{p}(pos,4))
+                Joint_HT_table{p}(pos,5) = 1;
+            else
+                Joint_HT_table{p}(pos,5) = 0;
+            end
+            % ML with H1 favorable for breaking ties
+            if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) >= Joint_HT_table{p}(pos,4) * prior_H0(patient_itt(p))) % TODO: grab relevant prior_H1 and prior_H0
+                Joint_HT_table{p}(pos,6) = 1;
+            else
+                Joint_HT_table{p}(pos,6) = 0;
+            end
+
+            %prep for 3.1d
+            mesh_table{p,1}(k,j) = Joint_HT_table{p}(pos,3);
+            mesh_table{p,2}(k,j) = Joint_HT_table{p}(pos,4);
+        end
+    end
+end
+
+
+%3.1d - Plot conditional joint PMFs
+for p = 1:3
+    %title(); %TODO: create titles for each of these graphs
+    mesh(mesh_table{p,1}); % H0 hypothesis
+    mesh(mesh_table{p,2}); % H1 hypothesis
+end
+
+%% Task 3.2
+% Calculate alarms for the testing data set based on
