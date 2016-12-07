@@ -293,13 +293,21 @@ for p = 1:3
             %3.1b - Generate MAP and ML decision rule vectors
             % MAP first
             if(Joint_HT_table{p}(pos,3) >= Joint_HT_table{p}(pos,4))
-                Joint_HT_table{p}(pos,5) = 1;
+                if(Joint_HT_table{p}(pos,3) == 0)
+                   Joint_HT_table{p}(pos,5) = 0;
+                else
+                    Joint_HT_table{p}(pos,5) = 1;
+                end
             else
                 Joint_HT_table{p}(pos,5) = 0;
             end
             % ML with H1 favorable for breaking ties
             if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) >= Joint_HT_table{p}(pos,4) * prior_H0(patient_itt(p)))
-                Joint_HT_table{p}(pos,6) = 1;
+                if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) == 0)
+                  Joint_HT_table{p}(pos,6) = 0;  
+                else
+                    Joint_HT_table{p}(pos,6) = 1;
+                end
             else
                 Joint_HT_table{p}(pos,6) = 0;
             end
@@ -326,8 +334,8 @@ end
 %3.2a Calculate alarms for the testing data set based on
 for p = 1:3 % All 3 patients
     for f = 1:2 % Both features
-        for sample_itt = 1:length(test(patient_itt(p)).all_data(3,:))
-           sample_val = test(patient_itt(p)).all_data(3,sample_itt);
+        for sample_itt = 1:testing_length(patient_itt(p));
+           sample_val = test(patient_itt(p)).all_data(feature_itt(f),sample_itt);
            ML_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,5);
            MAP_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,6);
         end
@@ -393,14 +401,23 @@ for p = 1:3
 end
 
 %3.2c - Plot generated alarms
-%{
+% TODO: LABEL THIS STUFF MAN...
 for p = 1:3
     figure;
-    for f = 1:2
-       subplot(3, 1, f);
-       bar()
-       subplot
-    end
-    legend('H0 pmf', 'H1 pmf');
+    
+    % H0
+    subplot(3, 1, 1);
+    bar(Joint_HT_table{p}(:,5));
+    title(['H0 for Patient ', num2str(patient_itt(p))]);
+    
+    %H1
+    subplot(3, 1, 2);
+    bar(Joint_HT_table{p}(:,6));
+    title(['H1 for Patient ', num2str(patient_itt(p))]);
+    
+    % Golden
+    subplot(3, 1, 3);
+    bar(test(patient_itt(p)).all_labels);
+    title(['Golden Alarms for Patient ', num2str(patient_itt(p))]);
 end
-%}
+
