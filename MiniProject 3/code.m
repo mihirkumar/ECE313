@@ -273,11 +273,8 @@ end
 
 for k = 1:9
     for j = 1:7
-        train(k).pref_total(j) = sum(patient_pref(k,j,:)) - 1;  
+        train(k).pref_total(j) = sum(patient_pref(k,j,:)) - 1;
     end
-end
-for k = 1:9
-    patient_errorcoef(k) = sum(sum(patient_pref(k,:,:))) - 7;
 end
 feature_effect = zeros(7,1);
 for k = 1:9
@@ -289,8 +286,8 @@ end
 %% Task 3.1
 %3.1a - Generate likelihood matrices from feature pairs
 %Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
-patient_itt = [3,6,9]; % use this to itterate over all 3 patients
-feature_itt = [3 4; 4 5; 4 5;];
+patient_itt = [1,2,3]; % use this to itterate over all 3 patients
+feature_itt = [3 4; 3 4; 3 4;];
 for p = 1:3
     pos = 0;
     for k = 1:length(HT_table_array{patient_itt(p),feature_itt(p,1)}) % Iterate over all of the first feature
@@ -318,7 +315,7 @@ for p = 1:3
             % ML with H1 favorable for breaking ties
             if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) >= Joint_HT_table{p}(pos,4) * prior_H0(patient_itt(p)))
                 if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) == 0)
-                  Joint_HT_table{p}(pos,6) = 0;  
+                  Joint_HT_table{p}(pos,6) = 0;
                 else
                     Joint_HT_table{p}(pos,6) = 1;
                 end
@@ -336,10 +333,10 @@ end
 
 %3.1d - Plot conditional joint PMFs
 for p = 1:3 % TODO: Rename the below titles to be clearer
-    title(['H0 Conditional Joint PMF for Patient ', patient_itt(p)]);
+    title(['H0 Conditional Joint PMF for Patient ', num2str(patient_itt(p))]);
     figure;
     mesh(mesh_table{p,1}); % H0 hypothesis
-    title(['H1 Conditional Joint PMF for Patient ', patient_itt(p)]);
+    title(['H1 Conditional Joint PMF for Patient ', num2str(patient_itt(p))]);
     figure;
     mesh(mesh_table{p,2}); % H1 hypothesis
 end
@@ -411,20 +408,19 @@ for p = 1:3
 end
 
 %3.2c - Plot generated alarms
-% TODO: LABEL THIS STUFF MAN...
 for p = 1:3
     figure;
-    
+
     % H0
     subplot(3, 1, 1);
     bar(Joint_HT_table{p}(:,5));
     title(['H0 for Patient ', num2str(patient_itt(p))]);
-    
+
     %H1
     subplot(3, 1, 2);
     bar(Joint_HT_table{p}(:,6));
     title(['H1 for Patient ', num2str(patient_itt(p))]);
-    
+
     % Golden
     subplot(3, 1, 3);
     bar(test(patient_itt(p)).all_labels);
@@ -434,5 +430,5 @@ end
 %% Task 3.3
 
 % Calculate average P(error) across all 3 patients for MAP and ML
-%average_MAP_error = average()
-%average_ML_error = average(Test_data_error_table_array{p,f}(1,3, Test_data_error_table_array{p,f}(1,3, Test_data_error_table_array{p,f}(1,3)
+average_ML_error = (Test_data_error_table_array{1}(1,3) + Test_data_error_table_array{2}(1,3) + Test_data_error_table_array{3}(1,3))/3;
+average_MAP_error = (Test_data_error_table_array{1}(1,4) + Test_data_error_table_array{2}(1,4) + Test_data_error_table_array{3}(1,4))/3;
