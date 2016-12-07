@@ -347,21 +347,18 @@ end
 %% Task 3.2
 %3.2a Calculate alarms for the testing data set based on
 for p = 1:3 % All 3 patients
-    for f = 1:2 % Both features
-        for sample_itt = 1:testing_length(patient_itt(p));
-           sample_val = test(patient_itt(p)).all_data(feature_itt(f),sample_itt);
-           ML_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,5);
-           MAP_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,6);
-        end
-    end
+    for sample_itt = 1:testing_length(patient_itt(p));
+        f1_itt = test(patient_itt(p)).all_data(feature_itt(1),sample_itt);
+        f2_itt = test(patient_itt(p)).all_data(feature_itt(2),sample_itt);
+        sample_val = min(find(Joint_HT_table{p}(:,1) == f1_itt)) + f2_itt - 1;
+        ML_test_alarms{p}(sample_itt) = Joint_HT_table{p}(sample_val,5);
+        MAP_test_alarms{p}(sample_itt) = Joint_HT_table{p}(sample_val,6);
+	end
 end
 
 %3.2b Calculate probabilities
-Test_data_error_table_array = cell(3,2);
-
 for p = 1:3
-    for f = 1:2
-        Test_data_error_table_array{p,f} = zeros(2,3);
+        Test_data_error_table_array{p} = zeros(2,3);
 
         missed_detect_MAP = 0;
         false_alarm_MAP = 0;
@@ -372,8 +369,8 @@ for p = 1:3
         error_ML = 0;
 
         for j = 1:testing_length(patient_itt(p))
-            ML = ML_test_alarms{p,f}(j);
-            MAP = MAP_test_alarms{p,f}(j);
+            ML = ML_test_alarms{p}(j);
+            MAP = MAP_test_alarms{p}(j);
 
             %physician alarm for this measurement
             golden_value = test(patient_itt(p)).all_labels(j);
@@ -404,14 +401,13 @@ for p = 1:3
                 error_MAP = error_MAP + 1;
             end
         end
-        Test_data_error_table_array{p,f}(1,1) = false_alarm_ML/prior_H0_test(patient_itt(p));
-        Test_data_error_table_array{p,f}(1,2) = missed_detect_ML/prior_H1_test(patient_itt(p));
-        Test_data_error_table_array{p,f}(1,3) = error_ML/testing_length(patient_itt(p));
+        Test_data_error_table_array{p}(1,1) = false_alarm_ML/prior_H0_test(patient_itt(p));
+        Test_data_error_table_array{p}(1,2) = missed_detect_ML/prior_H1_test(patient_itt(p));
+        Test_data_error_table_array{p}(1,3) = error_ML/testing_length(patient_itt(p));
 
-        Test_data_error_table_array{p,f}(2,1) = false_alarm_MAP/prior_H0_test(patient_itt(p));
-        Test_data_error_table_array{p,f}(2,2) = missed_detect_MAP/prior_H1_test(patient_itt(p));
-        Test_data_error_table_array{p,f}(2,3) = error_MAP/testing_length(patient_itt(p));
-    end
+        Test_data_error_table_array{p}(2,1) = false_alarm_MAP/prior_H0_test(patient_itt(p));
+        Test_data_error_table_array{p}(2,2) = missed_detect_MAP/prior_H1_test(patient_itt(p));
+        Test_data_error_table_array{p}(2,3) = error_MAP/testing_length(patient_itt(p));
 end
 
 %3.2c - Plot generated alarms
@@ -434,3 +430,9 @@ for p = 1:3
     bar(test(patient_itt(p)).all_labels);
     title(['Golden Alarms for Patient ', num2str(patient_itt(p))]);
 end
+
+%% Task 3.3
+
+% Calculate average P(error) across all 3 patients for MAP and ML
+%average_MAP_error = average()
+%average_ML_error = average(Test_data_error_table_array{p,f}(1,3, Test_data_error_table_array{p,f}(1,3, Test_data_error_table_array{p,f}(1,3)
