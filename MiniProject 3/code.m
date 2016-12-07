@@ -273,8 +273,11 @@ end
 
 for k = 1:9
     for j = 1:7
-        train(k).pref_total(j) = sum(patient_pref(k,j,:)) - 1;
+        train(k).pref_total(j) = sum(patient_pref(k,j,:)) - 1;  
     end
+end
+for k = 1:9
+    patient_errorcoef(k) = sum(sum(patient_pref(k,:,:))) - 7;
 end
 feature_effect = zeros(7,1);
 for k = 1:9
@@ -431,4 +434,3 @@ for p = 1:3
     bar(test(patient_itt(p)).all_labels);
     title(['Golden Alarms for Patient ', num2str(patient_itt(p))]);
 end
-
