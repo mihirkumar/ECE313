@@ -320,4 +320,15 @@ for p = 1:3
 end
 
 %% Task 3.2
-% Calculate alarms for the testing data set based on
+%3.2a Calculate alarms for the testing data set based on
+for p = 1:3 % All 3 patients
+    for f = 1:2 % Both features
+        for sample_itt = 1:length(test(patient_itt(p)).all_data(3,:))
+           sample_val = test(patient_itt(p)).all_data(3,sample_itt);
+           ML_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,5);
+           MAP_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,6);
+        end
+    end 
+end
+
+%3.2b Calculate 
