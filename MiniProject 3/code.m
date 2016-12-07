@@ -276,7 +276,7 @@ end
 %3.1a - Generate likelihood matrices from feature pairs
 %Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
 patient_itt = [1,3,4]; % use this to itterate over all 3 patients
-feature_itt = [[2,7],[2,7],[1,4]];
+feature_itt = [2 7; 2 7; 1 4;];
 for p = 1:3
     pos = 0;
     for k = 1:length(HT_table_array{patient_itt(p),feature_itt(p,1)}) % Iterate over all of the first feature
