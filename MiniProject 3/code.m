@@ -368,12 +368,12 @@ for p = 1:3
         false_alarm_ML = 0;
         error_ML = 0;
 
-        for i = 1:testing_length(patient_itt(p))
-            ML = ML_test_alarms{p,f}(i);
-            MAP = MAP_test_alarms{p,f}(i);
+        for j = 1:testing_length(patient_itt(p))
+            ML = ML_test_alarms{p,f}(j);
+            MAP = MAP_test_alarms{p,f}(j);
 
             %physician alarm for this measurement
-            golden_value = test(patient_itt(p)).all_labels(i);
+            golden_value = test(patient_itt(p)).all_labels(j);
 
             %ML counter increments
             if (ML == 1 && golden_value == 0)
