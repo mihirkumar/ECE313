@@ -208,6 +208,7 @@ for k = 1:9
     end
 end
 
+
 %% Task 2
 %For every patient, find the lowest correlations
     %Make data sets that are all the same length (1412, shortest data
@@ -223,16 +224,12 @@ end
 for k = 1:9
     for j = 1:7
         for h = 1:7
+            %get a correlation matrix
             correlation = corrcoef(train(k).short(j,:), train(k).short(h,:));
             train(k).corr(j,h) = correlation(2,1);
+            %Get lowest MAP*MAP
+            error_table(k,j) = Error_table_array{k,j}(2,3);
         end
-    end
-end
-
-%Two features with lowest MAP errors (MAP error lower than ML error)
-for k = 1:9
-    for j = 1:7
-        error_table(k,j) = Error_table_array{k,j}(2,3);
     end
 end
 
@@ -240,13 +237,17 @@ end
 for k = 1:9
     for j = 1:7
         for h = 1:7
-            error_array(j,h) = abs(error_table(k,j)*error_table(k,h));
-            train(k).patient_pref(j,h) = abs(error_array(j,h)*train(k).corr(j,h));
-            patient_pref(k,j,h) = abs(error_array(j,h)*train(k).corr(j,h));
+            train(k).error_array(j,h) = abs(error_table(k,j)*error_table(k,h));
+            train(k).patient_pref(j,h) = abs(train(k).error_array(j,h)*train(k).corr(j,h));
+            if j == h
+            train(k).error_array(j,h) = 1;
+            end
+            patient_pref(k,j,h) = abs(train(k).error_array(j,h)*train(k).corr(j,h));
         end
     end
+    %{
     figure;
-    surf(error_array);
+    surf(train(k).error_array);
     title(['Error, patient ', num2str(k)]);
     figure;
     surf(abs(train(k).corr));
@@ -254,6 +255,7 @@ for k = 1:9
     figure;
     surf(train(k).patient_pref);
     title(['Preference, patient ', num2str(k)]);
+    %}
 end
 
 for k = 1:9
@@ -269,8 +271,17 @@ for k = 1:9
     end
 end
 
-
-
+for k = 1:9
+    for j = 1:7
+        train(k).pref_total(j) = sum(patient_pref(k,j,:)) - 1;
+    end
+end
+feature_effect = zeros(7,1);
+for k = 1:9
+    for j = 1:7
+    feature_effect(j,1) = feature_effect(j) + train(k).pref_total(j);
+    end
+end
 
 %% Task 3.1
 %3.1a - Generate likelihood matrices from feature pairs
