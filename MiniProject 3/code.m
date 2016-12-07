@@ -212,6 +212,7 @@ end
 %For every patient, find the lowest correlations
     %Make data sets that are all the same length (1412, shortest data 
     % length) for comparison
+    feature_array = {'Mean Area under the heart beat','Mean R-to-R peak interval','Number of beats per minute (Heart Rate)','Peak to peak interval for Blood pressure','Systolic Blood Pressure','Diastolic Blood Pressure','Pulse Pressure'};
 for k = 1:9
     for j = 1:7
         for h = 1:1412
@@ -233,17 +234,92 @@ for k = 1:9
     for j = 1:7
         compare = min(abs(train(k).corr(:)));
     end
-    train(k).lowest_correlation(1) = compare;
+    train(k).lowest_correlation = compare;
 end
 %Save the features that correlate least
 for k = 1:9
     for j = 1:7
         for h = 1:7
-            if abs(train(k).corr(j,h)) == train(k).best_val
-                train(k).lowest_correlation(2) = j;
-                train(k).lowest_correlation(3) = h;
+            if abs(train(k).corr(j,h)) == train(k).lowest_correlation(1)
+                train(k).corr_features(1) = j;%train(k).lowest_correlation(2) = feature_array(j);
+                train(k).corr_features(2) = h;%train(k).lowest_correlation(3) = feature_array(h);
             end  
         end
     end
 end
+
+train = rmfield(train, 'corr');
+
 %Two features with lowest MAP errors (MAP error lower than ML error)
+for k = 1:9
+    for j = 1:7
+        train(k).error_table(j,1) = Error_table_array{k,j}(2,3);
+        train(k).error_table(j,2) = j;
+    end
+end
+
+%Save the feature with the lowest error
+for k = 1:9
+    sorted_error_table = sort(train(k).error_table);
+    for j = 1:7
+        for h = 1:7
+            if train(k).error_table(j,1) == sorted_error_table(h,1)
+                train(k).error_table(j,2) = sorted_error_table(h,2);
+            end
+        end
+    end
+end
+
+for k = 1:9
+    for j = 1:7
+        for h = 1:7
+            if h > j 
+                if train(k).error_table(j,2) == train(k).error_table(h,2)
+                    train(k).error_table(h,2) = train(k).error_table(h,2) - 1;
+                end
+            end
+        end
+    end
+end
+%first element is the best feature, last element is the worst feature
+for k = 1:9
+    for j = 1:7
+        for h = 1:7
+            if train(k).error_table(h,2) == j
+                train(k).error_features(j) = h;
+            end
+        end
+    end
+end
+
+%combine these features to find the best two features to use
+for k = 1:9
+    err_corr1 = train(k).error_table(train(k).error_rank(train(k).corr_features(1)),1);
+    err_corr2 = train(k).error_table(train(k).error_rank(train(k).corr_features(2)),1);
+    train(k).patient_preference = train(k).lowest_correlation * (err_corr1 + err_corr2);
+end
+
+for k = 1:9
+    patient_pref_array(k) = train(k).patient_preference;
+end
+rank = 1;
+for k = 1:8
+    best = min(patient_pref_array);
+    best
+    for j = 1:9
+        if best == patient_pref_array(j)
+            rank
+            patient_pref_array(j) = rank;
+            rank = rank+1;
+        end
+    end
+end
+
+
+
+
+
+
+
+            
+            
