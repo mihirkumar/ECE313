@@ -276,7 +276,7 @@ end
 %3.1a - Generate likelihood matrices from feature pairs
 %Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
 patient_itt = [1,3,4]; % use this to itterate over all 3 patients
-feature_itt = [2 7; 2 7; 1 4;];
+feature_itt = [2 7; 3 7; 7 1;];
 for p = 1:3
     pos = 0;
     for k = 1:length(HT_table_array{patient_itt(p),feature_itt(p,1)}) % Iterate over all of the first feature
@@ -320,15 +320,4 @@ for p = 1:3
 end
 
 %% Task 3.2
-%3.2a Calculate alarms for the testing data set based on
-for p = 1:3 % All 3 patients
-    for f = 1:2 % Both features
-        for sample_itt = 1:length(test(patient_itt(p)).all_data(3,:))
-           sample_val = test(patient_itt(p)).all_data(3,sample_itt);
-           ML_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,5);
-           MAP_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,6);
-        end
-    end 
-end
-
-%3.2b Calculate 
+% Calculate alarms for the testing data set based on
