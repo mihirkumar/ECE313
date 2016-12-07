@@ -207,3 +207,43 @@ for k = 1:9
         Error_table_array{k,j}(2,3) = error_MAP/testing_length(k);
     end
 end
+
+%% Task 2
+%For every patient, find the lowest correlations
+    %Make data sets that are all the same length (1412, shortest data 
+    % length) for comparison
+for k = 1:9
+    for j = 1:7
+        for h = 1:1412
+        train(k).short(j, h) = train(k).all_data(j,h);
+        end
+    end
+end
+
+for k = 1:9
+    for j = 1:7
+        for h = 1:7
+            correlation = corrcoef(train(k).short(j,:), train(k).short(h,:));
+            train(k).corr(j,h) = correlation(2,1);
+        end
+    end
+end
+%Find the lowest correlation per patient
+for k = 1:9
+    for j = 1:7
+        compare = min(abs(train(k).corr(:)));
+    end
+    train(k).lowest_correlation(1) = compare;
+end
+%Save the features that correlate least
+for k = 1:9
+    for j = 1:7
+        for h = 1:7
+            if abs(train(k).corr(j,h)) == train(k).best_val
+                train(k).lowest_correlation(2) = j;
+                train(k).lowest_correlation(3) = h;
+            end  
+        end
+    end
+end
+%Two features with lowest MAP errors (MAP error lower than ML error)
