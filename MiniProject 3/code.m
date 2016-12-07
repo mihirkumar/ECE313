@@ -27,7 +27,7 @@ for k = 1:9
     training_length(k) = floor(all_length(k) * 2/3);
     testing_length(k) = all_length(k) - training_length(k);
     dat_array(k).all_data = floor(dat_array(k).all_data);
-   
+
 end
 
 %initialize all data sets for permuatations
@@ -67,14 +67,14 @@ feature_labels = {'Mean Area under the Heart Beat','Mean R-to-R peak interval','
 feature_max_length = [17, 220, 220, 220, 115, 86, 74];
 
 likelihood_matrix_all_features = cell(9,7);
-    
+
 for k = 1:9
     for j = 1:7
         goldens_tabulated = tabulate(train(k).goldens(j,:))';
         nongoldens_tabulated = tabulate(train(k).nongoldens(j,:))';
         Xi = union(goldens_tabulated(1,:), nongoldens_tabulated(1,:));
         likelihood_matrix_all_features{k,j} = zeros(5,length(Xi));
-        
+
         for idx = 1:length(Xi) %idx iterates over Xi
             likelihood_matrix_all_features{k,j}(1,idx) = Xi(idx);
             %populate h1 row in likelihood matrix of jth feature
@@ -84,7 +84,7 @@ for k = 1:9
             else
                 likelihood_matrix_all_features{k,j}(2,idx) = 0;
             end
-            
+
             %populate h0 row in likelihood matrix of jth feature
             if ismember(Xi(idx),nongoldens_tabulated(1,:))
                 nongolden_index_of_Xi_value = find(nongoldens_tabulated(1,:)==Xi(idx),1);
@@ -92,23 +92,23 @@ for k = 1:9
             else
                 likelihood_matrix_all_features{k,j}(3,idx) = 0;
             end
-            
+
         end
     end
 end
-        
+
 
 for k = 1:9
     figure;
     for j = 1:7
-       subplot(7, 1, j); 
+       subplot(7, 1, j);
         plot(likelihood_matrix_all_features{k,j}(3,:));
-        
+
         % Add feature titles and set axis for each subplot
         title(feature_labels(j));
         axis([0 feature_max_length(j) 0 1]);
-        
-        hold on; 
+
+        hold on;
         plot(likelihood_matrix_all_features{k,j}(2,:));
     end
     legend('H0 pmf', 'H1 pmf');
@@ -119,7 +119,7 @@ for k = 1:9
         for i = 1:length(likelihood_matrix_all_features{k,j}(1,:))
                 if(likelihood_matrix_all_features{k,j}(2,i) >= likelihood_matrix_all_features{k,j}(3,i))
                     likelihood_matrix_all_features{k,j}(4,i) = 1;
-                else 
+                else
                     likelihood_matrix_all_features{k,j}(4,i) = 0;
                 end
                 if(likelihood_matrix_all_features{k,j}(2,i) * prior_H1(k) >= likelihood_matrix_all_features{k,j}(3,i)*prior_H0(k))
@@ -148,15 +148,15 @@ end
 for k = 1:9
     for j = 1:7
         Error_table_array{k,j} = zeros(2,3);
-        
+
         missed_detect_MAP = 0;
         false_alarm_MAP = 0;
         error_MAP = 0;
-        
+
         missed_detect_ML = 0;
         false_alarm_ML = 0;
         error_ML = 0;
-        
+
         for i = 1:testing_length(k)
             if ismember(test(k).all_data(j,i), HT_table_array{k,j}(:,1))
             %if that measurement value was in HT_table_array
@@ -168,32 +168,32 @@ for k = 1:9
                 ML = 1;
                 MAP = 1;
             end
-            
+
             %physician alarm for this measurement
             golden_value = test(k).all_labels(i);
-            
+
             %ML counter increments
             if (ML == 1 && golden_value == 0)
                 false_alarm_ML = false_alarm_ML + 1;
             end
-            
+
             if (ML == 0 && golden_value == 1)
                 missed_detect_ML = missed_detect_ML + 1;
             end
-            
+
             if ((ML == 1 && golden_value == 0) || (ML == 0 && golden_value == 1))
                 error_ML = error_ML + 1;
             end
-            
+
             %MAP counter increments
             if (MAP == 1 && golden_value == 0)
                 false_alarm_MAP = false_alarm_MAP + 1;
             end
-            
+
             if (MAP == 0 && golden_value == 1)
                 missed_detect_MAP = missed_detect_MAP + 1;
             end
-            
+
             if ((MAP == 1 && golden_value == 0) || (MAP == 0 && golden_value == 1))
                 error_MAP = error_MAP + 1;
             end
@@ -201,7 +201,7 @@ for k = 1:9
         Error_table_array{k,j}(1,1) = false_alarm_ML/prior_H0_test(k);
         Error_table_array{k,j}(1,2) = missed_detect_ML/prior_H1_test(k);
         Error_table_array{k,j}(1,3) = error_ML/testing_length(k);
-        
+
         Error_table_array{k,j}(2,1) = false_alarm_MAP/prior_H0_test(k);
         Error_table_array{k,j}(2,2) = missed_detect_MAP/prior_H1_test(k);
         Error_table_array{k,j}(2,3) = error_MAP/testing_length(k);
@@ -210,7 +210,7 @@ end
 
 %% Task 2
 %For every patient, find the lowest correlations
-    %Make data sets that are all the same length (1412, shortest data 
+    %Make data sets that are all the same length (1412, shortest data
     % length) for comparison
 for k = 1:9
     for j = 1:7
@@ -325,10 +325,10 @@ for p = 1:3 % All 3 patients
     for f = 1:2 % Both features
         for sample_itt = 1:length(test(patient_itt(p)).all_data(3,:))
            sample_val = test(patient_itt(p)).all_data(3,sample_itt);
-           ML_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,5);
-           MAP_test_alarms{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,6);
+           ML_test_rules{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,5);
+           MAP_test_rules{p,f}(sample_itt) = Joint_HT_table{p}(sample_val,6);
         end
-    end 
+    end
 end
 
-%3.2b Calculate 
+%3.2b Calculate
