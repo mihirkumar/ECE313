@@ -208,81 +208,70 @@ for k = 1:9
     end
 end
 
-
 %% Task 2
 %For every patient, find the lowest correlations
-    %Make data sets that are all the same length (1412, shortest data
-    % length) for comparison
-for k = 1:9
-    for j = 1:7
-        for h = 1:1412
-        train(k).short(j, h) = train(k).all_data(j,h);
-        end
-    end
-end
-
+%Make data sets that are all the same length for comparison 
+shortened_length = min(training_length);
 for k = 1:9
     for j = 1:7
         for h = 1:7
             %get a correlation matrix
-            correlation = corrcoef(train(k).short(j,:), train(k).short(h,:));
+            correlation = corrcoef(train(k).short(j,1:shortened_length), train(k).short(h,1:shortened_length));
             train(k).corr(j,h) = correlation(2,1);
-            %Get lowest MAP*MAP
-            error_table(k,j) = Error_table_array{k,j}(2,3);
         end
     end
 end
 
-%combine these features to find the best two features to use
-for k = 1:9
-    for j = 1:7
-        for h = 1:7
-            train(k).error_array(j,h) = abs(error_table(k,j)*error_table(k,h));
-            train(k).patient_pref(j,h) = abs(train(k).error_array(j,h)*train(k).corr(j,h));
-            if j == h
-            train(k).error_array(j,h) = 1;
-            end
-            patient_pref(k,j,h) = abs(train(k).error_array(j,h)*train(k).corr(j,h));
-        end
-    end
-    %{
-    figure;
-    surf(train(k).error_array);
-    title(['Error, patient ', num2str(k)]);
-    figure;
-    surf(abs(train(k).corr));
-    title(['Correlation, patient ', num2str(k)]);
-    figure;
-    surf(train(k).patient_pref);
-    title(['Preference, patient ', num2str(k)]);
-    %}
-end
 
+%Minimize error
+%error_table: 
+%feature|MAP e|MAP md||MAP fa|ML e|ML md|ML fa|
+testing_col = 2; %MAP error
 for k = 1:9
-    best_error(k) = min(min(patient_pref(k,:,:)));
     for j = 1:7
-        for h = 1:7
-            if patient_pref(k,j,h) == best_error(k)
-                features(k,1) = h;
-                features(k,2) = j;
-                features(k,3) = best_error(k);
-            end
-        end
+        train(k).error_table(j,1) = j;
+        train(k).error_table(j,2) = Error_table_array{k,j}(2,3);
+        train(k).error_table(j,3) = Error_table_array{k,j}(2,2);
+        train(k).error_table(j,4) = Error_table_array{k,j}(2,1);
+        train(k).error_table(j,5) = Error_table_array{k,j}(1,3);
+        train(k).error_table(j,6) = Error_table_array{k,j}(1,2);
+        train(k).error_table(j,7) = Error_table_array{k,j}(1,1);
     end
+    train(k).error_table = sortrows(train(k).error_table,testing_col); 
 end
+%better (lower) errors will sort to the top. Use
+% sortrows(train(k).error_table, COL_INDEX) to get best features for each
+% decision facet.
 
+%use error_table to get the lowest 3 errors, and pick the two with the
+%lowest correlation
+%FEATURES:
+%|Feature 1|Feature2|Error of 1|Error of 2|Correlation of 1,2|
 for k = 1:9
-    for j = 1:7
-        train(k).pref_total(j) = sum(patient_pref(k,j,:)) - 1;
+    corr12 = train(k).corr(train(k).error_table(1,1), train(k).error_table(2,1));
+    corr13 = train(k).corr(train(k).error_table(1,1), train(k).error_table(3,1));
+    corr23 = train(k).corr(train(k).error_table(1,1), train(k).error_table(3,1));
+    lowest_corr = min(corr12, corr13, corr23);
+    if corr12 == lowest_corr
+        features(k,1) = train(k).error_table(1,1);
+        features(k,2) = train(k).error_table(2,1);
+        features(k,3) = train(k).error_table(1,testing_col);
+        features(k,4) = train(k).error_table(2,testing_col);
+        features(k,5) = corr12;
+    elseif corr13 == lowest_corr
+        features(k,1) = train(k).error_table(1,1);
+        features(k,2) = train(k).error_table(3,1);
+        features(k,3) = train(k).error_table(1,testing_col);
+        features(k,4) = train(k).error_table(3,testing_col);
+        features(k,5) = corr13;
+    else
+        features(k,1) = train(k).error_table(2,1);
+        features(k,2) = train(k).error_table(3,1);
+        features(k,3) = train(k).error_table(2,testing_col);
+        features(k,4) = train(k).error_table(3,testing_col);
+        features(k,5) = corr23;
     end
 end
-feature_effect = zeros(7,1);
-for k = 1:9
-    for j = 1:7
-    feature_effect(j,1) = feature_effect(j) + train(k).pref_total(j);
-    end
-end
-
 %% Task 3.1
 %3.1a - Generate likelihood matrices from feature pairs
 %Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
