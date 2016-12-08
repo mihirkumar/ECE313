@@ -216,7 +216,7 @@ for k = 1:9
     for j = 1:7
         for h = 1:7
             %get a correlation matrix
-            correlation = corrcoef(train(k).short(j,1:shortened_length), train(k).short(h,1:shortened_length));
+            correlation = corrcoef(train(k).all_data(j,1:shortened_length), train(k).all_data(h,1:shortened_length));
             train(k).corr(j,h) = correlation(2,1);
         end
     end
@@ -247,11 +247,11 @@ end
 %lowest correlation
 %FEATURES:
 %|Feature 1|Feature2|Error of 1|Error of 2|Correlation of 1,2|
-for k = 1:9
+for k = 1:8 % Leave off 9 because 9 and 6 are identical
     corr12 = train(k).corr(train(k).error_table(1,1), train(k).error_table(2,1));
     corr13 = train(k).corr(train(k).error_table(1,1), train(k).error_table(3,1));
     corr23 = train(k).corr(train(k).error_table(1,1), train(k).error_table(3,1));
-    lowest_corr = min(corr12, corr13, corr23);
+    lowest_corr = min([corr12, corr13, corr23]);
     if corr12 == lowest_corr
         features(k,1) = train(k).error_table(1,1);
         features(k,2) = train(k).error_table(2,1);
@@ -271,19 +271,27 @@ for k = 1:9
         features(k,4) = train(k).error_table(3,testing_col);
         features(k,5) = corr23;
     end
+    features(k,6) = features(k,3)*features(k,4)*features(k,5);
+    features(k,7) = k;
 end
+features = sortrows(features,6);
+
 %% Task 3.1
 %3.1a - Generate likelihood matrices from feature pairs
 %Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
-patient_itt = [1,2,3]; % use this to itterate over all 3 patients
-feature_itt = [3 4; 3 4; 3 4;];
+patient_itt = [features(1,7), features(2,7), features(3,7)]; % use this to itterate over all 3 patients
+feature_itt = [features(1,1) features(1,2); features(2,1) features(2,2); features(3,1) features(3,2);];
+%patient_itt = [1, 3, 5];
+%feature_itt = [2 3; 2 3; 2 3;]
 for p = 1:3
     pos = 0;
-    for k = 1:length(HT_table_array{patient_itt(p),feature_itt(p,1)}) % Iterate over all of the first feature
-        for j = 1:length(HT_table_array{patient_itt(p),feature_itt(p,2)}) % Iterate over all of the second feature
+    k_max = length(HT_table_array{patient_itt(p),feature_itt(p,1)}(:,1));
+    j_max = length(HT_table_array{patient_itt(p),feature_itt(p,2)}(:,1));
+    for k = 1:k_max; % Iterate over all of the first feature
+        for j = 1:j_max % Iterate over all of the second feature
             pos = pos + 1;
-            Joint_HT_table{p}(pos,1) = k;
-            Joint_HT_table{p}(pos,2) = j;
+            Joint_HT_table{p}(pos,1) = HT_table_array{patient_itt(p),feature_itt(p,1)}(k,1);
+            Joint_HT_table{p}(pos,2) = HT_table_array{patient_itt(p),feature_itt(p,2)}(j,1);
             % Calculate P(X=k,Y=j | H1)
             Joint_HT_table{p}(pos,3) = HT_table_array{patient_itt(p),feature_itt(p,1)}(k,2) * HT_table_array{patient_itt(p),feature_itt(p,2)}(j,2);
             % Calculate P(X=k,Y=j | H0)
@@ -291,23 +299,15 @@ for p = 1:3
 
 
             %3.1b - Generate MAP and ML decision rule vectors
-            % MAP first
+            % ML first
             if(Joint_HT_table{p}(pos,3) >= Joint_HT_table{p}(pos,4))
-                if(Joint_HT_table{p}(pos,3) == 0)
-                   Joint_HT_table{p}(pos,5) = 0;
-                else
-                    Joint_HT_table{p}(pos,5) = 1;
-                end
+                Joint_HT_table{p}(pos,5) = 1;
             else
                 Joint_HT_table{p}(pos,5) = 0;
             end
-            % ML with H1 favorable for breaking ties
+            % MAP with H1 favorable for breaking ties
             if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) >= Joint_HT_table{p}(pos,4) * prior_H0(patient_itt(p)))
-                if(Joint_HT_table{p}(pos,3) * prior_H1(patient_itt(p)) == 0)
-                  Joint_HT_table{p}(pos,6) = 0;
-                else
-                    Joint_HT_table{p}(pos,6) = 1;
-                end
+                Joint_HT_table{p}(pos,6) = 1;
             else
                 Joint_HT_table{p}(pos,6) = 0;
             end
@@ -334,13 +334,26 @@ end
 %3.2a Calculate alarms for the testing data set based on
 for p = 1:3 % All 3 patients
     for sample_itt = 1:testing_length(patient_itt(p));
-        f1_itt = test(patient_itt(p)).all_data(feature_itt(1),sample_itt);
-        f2_itt = test(patient_itt(p)).all_data(feature_itt(2),sample_itt);
-        sample_val = min(find(Joint_HT_table{p}(:,1) == f1_itt)) + f2_itt - 1;
-        ML_test_alarms{p}(sample_itt) = Joint_HT_table{p}(sample_val,5);
-        MAP_test_alarms{p}(sample_itt) = Joint_HT_table{p}(sample_val,6);
-	end
+        f1_itt = test(patient_itt(p)).all_data(feature_itt(p,1),sample_itt);
+        f2_itt = test(patient_itt(p)).all_data(feature_itt(p,2),sample_itt);
+        %sample_val is the index where we have the requested values for
+        %feature 1 and feature 2
+        sample_val = find((Joint_HT_table{p}(:,1) == f1_itt) & (Joint_HT_table{p}(:,2) == f2_itt));
+        if(isempty(sample_val))
+            f1_itt
+            f2_itt
+            sample_itt
+            ML_test_alarms{p}(sample_itt) = 1;
+            MAP_test_alarms{p}(sample_itt) = 1; 
+        else
+            ML_test_alarms{p}(sample_itt) = Joint_HT_table{p}(sample_val,5);
+            MAP_test_alarms{p}(sample_itt) = Joint_HT_table{p}(sample_val,6);
+        end
+        majority_test_alarms{p}(sample_itt) = ML_test_alarms{p}(sample_itt) && MAP_test_alarms{p}(sample_itt);
+    end
 end
+
+
 
 %3.2b Calculate probabilities
 for p = 1:3
@@ -400,18 +413,24 @@ end
 for p = 1:3
     figure;
 
-    % H0
-    subplot(3, 1, 1);
-    bar(Joint_HT_table{p}(:,5));
-    title(['H0 for Patient ', num2str(patient_itt(p))]);
+    % MAP
+    subplot(4, 1, 1);
+    bar(MAP_test_alarms{p});
+    title(['MAP for Patient ', num2str(patient_itt(p))]);
 
-    %H1
-    subplot(3, 1, 2);
-    bar(Joint_HT_table{p}(:,6));
-    title(['H1 for Patient ', num2str(patient_itt(p))]);
+    %ML
+    subplot(4, 1, 2);
+    bar(ML_test_alarms{p});
+    title(['ML for Patient ', num2str(patient_itt(p))]);
+    
+    %Majority Voter
+    subplot(4, 1, 3);
+    bar(majority_test_alarms{p});
+    title(['Majority Voter for Patient ', num2str(patient_itt(p))]);    
+    
 
     % Golden
-    subplot(3, 1, 3);
+    subplot(4, 1, 4);
     bar(test(patient_itt(p)).all_labels);
     title(['Golden Alarms for Patient ', num2str(patient_itt(p))]);
 end
@@ -419,5 +438,5 @@ end
 %% Task 3.3
 
 % Calculate average P(error) across all 3 patients for MAP and ML
-average_ML_error = (Test_data_error_table_array{1}(1,3) + Test_data_error_table_array{2}(1,3) + Test_data_error_table_array{3}(1,3))/3;
-average_MAP_error = (Test_data_error_table_array{1}(1,4) + Test_data_error_table_array{2}(1,4) + Test_data_error_table_array{3}(1,4))/3;
+%average_ML_error = (Test_data_error_table_array{1}(1,3) + Test_data_error_table_array{2}(1,3) + Test_data_error_table_array{3}(1,3))/3;
+%average_MAP_error = (Test_data_error_table_array{1}(1,4) + Test_data_error_table_array{2}(1,4) + Test_data_error_table_array{3}(1,4))/3;
