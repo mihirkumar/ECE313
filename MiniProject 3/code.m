@@ -210,17 +210,17 @@ end
 
 %% Task 2
 %For every patient, find the lowest correlations
-%Make data sets that are all the same length for comparison 
-shortened_length = min(training_length);
 for k = 1:9
     for j = 1:7
         for h = 1:7
             %get a correlation matrix
-            correlation = corrcoef(train(k).all_data(j,1:shortened_length), train(k).all_data(h,1:shortened_length));
+            correlation = corrcoef(train(k).all_data(j,:), train(k).all_data(h,:));
             train(k).corr(j,h) = correlation(2,1);
         end
     end
 end
+%Make data sets that are all the same length for comparison
+
 
 
 %Minimize error
@@ -274,8 +274,25 @@ for k = 1:8 % Leave off 9 because 9 and 6 are identical
     features(k,6) = features(k,3)*features(k,4)*features(k,5);
     features(k,7) = k;
 end
-features = sortrows(features,6);
 
+for k = 1:9
+    for j = 1:7
+        for h = 1:7
+            error_array(j,h) = Error_table_array{k,j}(2,3)*Error_table_array{k,h}(2,3);
+        end
+    end
+    figure;
+    surf(abs(train(k).corr));
+    title(['Correlation, patient ', num2str(k)]);
+    xlabel('Feature 1');
+    ylabel('Feature 2');
+    figure;
+    surf(abs(error_array));
+    title(['Error, patient ', num2str(k)]);
+    xlabel('Feature 1');
+    ylabel('Feature 2');
+end
+ features = sortrows(features,6);
 %% Task 3.1
 %3.1a - Generate likelihood matrices from feature pairs
 %Assuming independent features, so P(X=k,Y=j) = P(X=k)P(Y=j)
@@ -340,9 +357,6 @@ for p = 1:3 % All 3 patients
         %feature 1 and feature 2
         sample_val = find((Joint_HT_table{p}(:,1) == f1_itt) & (Joint_HT_table{p}(:,2) == f2_itt));
         if(isempty(sample_val))
-            f1_itt
-            f2_itt
-            sample_itt
             ML_test_alarms{p}(sample_itt) = 1;
             MAP_test_alarms{p}(sample_itt) = 1; 
         else
