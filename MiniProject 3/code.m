@@ -452,5 +452,5 @@ end
 %% Task 3.3
 
 % Calculate average P(error) across all 3 patients for MAP and ML
-%average_ML_error = (Test_data_error_table_array{1}(1,3) + Test_data_error_table_array{2}(1,3) + Test_data_error_table_array{3}(1,3))/3;
-%average_MAP_error = (Test_data_error_table_array{1}(1,4) + Test_data_error_table_array{2}(1,4) + Test_data_error_table_array{3}(1,4))/3;
+average_ML_error = (Test_data_error_table_array{1}(1,3) + Test_data_error_table_array{2}(1,3) + Test_data_error_table_array{3}(1,3))/3;
+average_MAP_error = (Test_data_error_table_array{1}(1,4) + Test_data_error_table_array{2}(1,4) + Test_data_error_table_array{3}(1,4))/3;
